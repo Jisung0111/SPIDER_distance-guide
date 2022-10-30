@@ -1,0 +1,1 @@
+# contains nessasary functions that are not mainly related to our project.
