@@ -39,9 +39,9 @@ class Model:
         self.tau = tau;
         self.reg = reg;
         self.Q = Q;
-        self.alpha = 2/self.Q
-        self.beta = 2*self.Q
-        self.gamma = -2.77/self.Q
+        self.alpha = 2.0 / self.Q
+        self.beta = 2.0 * self.Q
+        self.gamma = -2.77 / self.Q
         self.neural_net = Neural_Networks[neural_net](input_size, feature_dim, batch_norm).to(device);
         self.optimizer = th.optim.Adam(self.neural_net.parameters(), lr = lr);
         
@@ -74,19 +74,9 @@ class Model:
 
             with th.no_grad(): train_avgdist += th.sum(dist[diag, diag]);
             
-            sqrt_dist = th.sqrt(dist);   # sqrt of dist
-            
-            #exp_dist = th.exp(-dist);
-
-            loss = th.sum(dist[diag, diag]*self.alpha)   # loss for genuine photo and sketch pair
-
-            for i in range(self.batch_size):
-                for j in range(self.batch_size):
-                    if(i==j):
-                        continue
-                    loss += th.exp(sqrt_dist[i][j]*self.gamma)*self.beta     # add loss of mismatch photo and sketch pair
-
-           # loss = -th.mean(th.log(exp_dist[diag, diag] / th.sum(exp_dist, 1)));
+            # Loss for genuine photo and sketch pair + Loss for mismatch photo and sketch pair
+            loss = self.alpha * th.sum(dist[diag, diag]) + \
+                   self.beta * (th.sum(th.exp(th.sqrt(dist) * self.gamma)) - th.sum(th.exp(th.sqrt(dist[diag, diag]) * self.gamma)));
 
             if self.guide == 'Distance':
                 # need to implement Distance guide
@@ -95,6 +85,7 @@ class Model:
                 #        loss += 
                 # if dist < pow(self.tau, 2): ...
                 # loss = loss + self.reg * reg_loss;
+                pass;
             
             losses += loss.item();
 
