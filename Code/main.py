@@ -20,8 +20,9 @@ parser.add_argument('--input_size', default = '224_224', type = str); # 224 * 22
 parser.add_argument('--batch_norm', default = 1, type = int); # indicates to use batch norm
 parser.add_argument('--feature_dim', default = 64, type = int); # dimension of output of CNN.
 parser.add_argument('--guide', default = 'Distance', type = str); # 'Distance' or 'None'
-parser.add_argument('--tau', default = 0.1, type = float); # used to determine necessity of distance guidance. still not sure how much value is appropriate.
+parser.add_argument('--tau', default = 0.2, type = float); # used to determine necessity of distance guidance. still not sure how much value is appropriate.
 parser.add_argument('--reg', default = 0.2, type = float); # weight of reg_loss. still not sure how much valie is appropriate.
+parser.add_argument('--Q', default = 10.0, type = float); # used for calculating hyper parameter alpha, beta, gamma.
 parser.add_argument('--neural_net', default = 'ResNet-50', type = str); # one of {VGG-11, VGG-13, VGG-16, VGG-19, ResNet-18, ResNet-34, ResNet-50, ResNet-101, ResNet-152}
 parser.add_argument('--device', default = 'cuda:0', type = str);
 
@@ -70,7 +71,8 @@ def main(args):
         args.neural_net,
         th.device(args.device),
         args.tau,
-        args.reg
+        args.reg,
+        args.Q
     );
 
     # Make a result saving directory

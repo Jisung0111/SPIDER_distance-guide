@@ -30,14 +30,18 @@ class Model:
         neural_net,
         device,
         tau,
-        reg
+        reg,
+        Q
     ):
         self.batch_size = batch_size;
         self.guide = guide;
         self.device = device;
         self.tau = tau;
         self.reg = reg;
-        
+        self.Q = Q;
+        self.alpha = 2/self.Q
+        self.beta = 2*self.Q
+        self.gamma = -2.77/self.Q
         self.neural_net = Neural_Networks[neural_net](input_size, feature_dim, batch_norm).to(device);
         self.optimizer = th.optim.Adam(self.neural_net.parameters(), lr = lr);
         
@@ -70,12 +74,25 @@ class Model:
 
             with th.no_grad(): train_avgdist += th.sum(dist[diag, diag]);
             
-            exp_dist = th.exp(-dist);
-            loss = -th.mean(th.log(exp_dist[diag, diag] / th.sum(exp_dist, 1)));
+            sqrt_dist = th.sqrt(dist);   # sqrt of dist
+            
+            #exp_dist = th.exp(-dist);
+
+            loss = th.sum(dist[diag, diag]*self.alpha)   # loss for genuine photo and sketch pair
+
+            for i in range(self.batch_size):
+                for j in range(self.batch_size):
+                    if(i==j):
+                        continue
+                    loss += th.exp(sqrt_dist[i][j]*self.gamma)*self.beta     # add loss of mismatch photo and sketch pair
+
+           # loss = -th.mean(th.log(exp_dist[diag, diag] / th.sum(exp_dist, 1)));
 
             if self.guide == 'Distance':
                 # need to implement Distance guide
-                pass;
+                #for i in range(self.batch_size):
+                #    if(sqrt_dist[i, i].item() < self.tau):
+                #        loss += 
                 # if dist < pow(self.tau, 2): ...
                 # loss = loss + self.reg * reg_loss;
             
@@ -89,6 +106,7 @@ class Model:
             if self.lr_scheduler == 'CosineAnnealingLR':
                 self.scheduler.step(epoch + (step + 1) / num_step);
         
+
         losses /= num_step;
         train_avgdist /= N;
         
