@@ -23,7 +23,7 @@ class Custom2Sampler(Sampler):
     def __iter__(self):
         unused_labels = self.dataset.labels
         # # unused_labels = unused_labels.reset_index(level=0, names = 'id')
-        unused_labels['id'] = unused_labels.index
+        #unused_labels['id'] = unused_labels.index
         # unused_labels.to_csv('labels_test.csv', index = False, encoding='utf-8' )
         for _ in range(self.num_of_batches):
             batch = []
@@ -33,8 +33,8 @@ class Custom2Sampler(Sampler):
                 random_label = np.random.choice(labels['class'].unique())
                 df = labels[labels['class']==random_label].sample(2)
                 for i, rows in df.iterrows():
-                    batch.append(rows['id'])
-                unused_labels = unused_labels[~unused_labels['id'].isin(df['id'])]
+                    batch.append(rows.index)
+                unused_labels = unused_labels[~unused_labels.loc[df.index]]
                 num_left_slots -= 2
             yield np.stack(batch)
 
