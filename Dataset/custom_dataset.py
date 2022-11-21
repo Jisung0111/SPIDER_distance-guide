@@ -31,7 +31,7 @@ class Custom2Sampler(Sampler):
             num_left_slots = self.batch_size #initial number of slots to fill batch
             while num_left_slots > 0:
                 random_label = np.random.choice(labels['class'].unique())
-                df = labels[labels['class']==random_label].sample(2) # labels data frame is parent, while df is child data frame. 
+                df = labels[labels['class']==random_label].sample(2) # labels is parent data frame, while df is child data frame. 
                 for i, rows in df.iterrows():
                     batch.append(rows.index)
                     #changed from rows['ID'] to rows.index
