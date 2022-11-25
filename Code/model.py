@@ -61,7 +61,7 @@ class Model:
                 self.optimizer, T_max = 10);
         else: raise ValueError("Wrong learning rate scheduler");
         self.y1_idx = th.eye(self.batch_size, device = self.device);
-        self.y0_idx = th.triu(th.ones((batch_size, batch_size), device = device)) - self.y1_idx;
+        self.y0_idx = th.ones((batch_size, batch_size), device = device) - self.y1_idx;
 
     def learn(self, epoch, train_label, valid_label, vbatch_size):
         N = train_label.shape[0];
@@ -85,11 +85,10 @@ class Model:
             Y1_calc_idx, Y0_calc_idx = self.y1_idx.clone(), self.y0_idx.clone();
             if self.guide == 'Distance':
                 reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
-                ry0_idx = th.sort(th.stack((reg_idx, reg_idx ^ 1)), dim = 0)[0];
-                Y1_calc_idx[reg_idx, reg_idx] = 0.0; Y1_calc_idx[ry0_idx[0], ry0_idx[1]] = 1.0;
-                Y0_calc_idx[reg_idx, reg_idx] = 1.0; Y0_calc_idx[ry0_idx[0], ry0_idx[1]] = 0.0;
+                Y1_calc_idx[reg_idx, reg_idx] = 0.0; Y1_calc_idx[reg_idx ^ 1, reg_idx] = 1.0;
+                Y0_calc_idx[reg_idx, reg_idx] = 1.0; Y0_calc_idx[reg_idx ^ 1, reg_idx] = 0.0;
             
-            loss = (self.alpha * th.sum(Y1_calc_idx * dist) + self.beta * th.sum(Y0_calc_idx * th.exp(sqrt_dist * self.gamma)));
+            loss = self.alpha * th.sum(Y1_calc_idx * dist) + self.beta * th.sum(Y0_calc_idx * th.exp(sqrt_dist * self.gamma));
             loss = loss / ((self.batch_size * self.batch_size + self.batch_size) / 2);
             
             losses += loss.item();
