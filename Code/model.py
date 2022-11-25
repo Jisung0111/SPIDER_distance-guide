@@ -82,14 +82,13 @@ class Model:
             
             with th.no_grad(): train_avgdist += th.sum(diag_dist);
 
-            Y1_calc_idx, Y0_calc_idx = self.y1_idx.clone(), self.y0_idx.clone();
+            loss = self.alpha * th.sum(dist[diag, diag]) + \
+                   self.beta  * th.sum(th.exp(sqrt_dist * self.gamma) - th.exp(sqrt_dist[diag, diag] * self.gamma));
             if self.guide == 'Distance':
                 reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
-                Y1_calc_idx[reg_idx, reg_idx] = 0.0; Y1_calc_idx[reg_idx ^ 1, reg_idx] = 1.0;
-                Y0_calc_idx[reg_idx, reg_idx] = 1.0; Y0_calc_idx[reg_idx ^ 1, reg_idx] = 0.0;
+                loss = loss + (self.reg * self.alpha) * dist[reg_idx ^ 1, reg_idx];
             
-            loss = self.alpha * th.sum(Y1_calc_idx * dist) + self.beta * th.sum(Y0_calc_idx * th.exp(sqrt_dist * self.gamma));
-            loss = loss / ((self.batch_size * self.batch_size + self.batch_size) / 2);
+            loss = loss / (self.batch_size * self.batch_size);
             
             losses += loss.item();
 
