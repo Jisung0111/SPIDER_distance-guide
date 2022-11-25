@@ -18,7 +18,7 @@ def seed_init(seed):
 def hms(x):
     return "{}h {:02d}m {:02d}s".format(x // 3600, x // 60 % 60, x % 60);
 
-def get_test_val(model, test_label, device, vbatch_size, data_per_figr):
+def get_test_val(model, test_label, device, vbatch_size):
     model = model.to(device);
     model.eval();
     with th.no_grad():
@@ -31,8 +31,8 @@ def get_test_val(model, test_label, device, vbatch_size, data_per_figr):
         dist = (feature_photo.unsqueeze(1) - feature_sketch.unsqueeze(0)).pow(2).sum(2);
 
         diag = th.arange(dist.shape[0]);
-        avgdist = th.mean(th.sqrt(dist[diag, diag]));
-        acc = th.mean((th.argmin(dist, 1).cpu() == diag).float());
+        avgdist = th.mean(th.sqrt(dist[diag, diag])).item();
+        acc = th.mean((th.argmin(dist, 0).cpu() == diag).float()).item();
     
     return avgdist, acc;
 
@@ -70,5 +70,5 @@ def plot_graph(history, result_path):
     plt.savefig(result_path + "Log.jpg");
 
 def load_data(label, device):
-    return th.from_numpy(np.stack(np.array([np.load("../Data/Preprocessed/{}_{}p.npy".format(l[0], l[1])) for l in label]))).to(device), \
-           th.from_numpy(np.stack(np.array([np.load("../Data/Preprocessed/{}_{}s.npy".format(l[0], l[1])) for l in label]))).to(device);
+    return th.from_numpy(np.stack([np.load("../Data/Preprocessed/{}_{}p.npy".format(l[0], l[1])) for l in label])).to(device), \
+           th.from_numpy(np.stack([np.load("../Data/Preprocessed/{}_{}s.npy".format(l[0], l[1])) for l in label])).to(device);
