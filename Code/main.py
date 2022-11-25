@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser();
 parser.add_argument('--seed', default = 0, type = int);
 parser.add_argument('--epochs', default = 50, type = int);
 parser.add_argument('--batch_size', default = 100, type = int); # batch size for training set. Should divide 16000.
-parser.add_argument('--vbatch_size', default = 200, type = int); # batch size for valid, test set. Should divide 2000.
+parser.add_argument('--vbatch_size', default = 500, type = int); # batch size for valid, test set. Should divide 2000.
 parser.add_argument('--data_per_figr', default = 10, type = int);
 parser.add_argument('--lr', default = 0.001, type = float);
 parser.add_argument('--lr_scheduler', default = 'None', type = str); # one of [None, ReduceLROnPlateau, CosineAnnealingLR]
@@ -22,15 +22,13 @@ parser.add_argument('--input_size', default = '224_224', type = str); # 224 * 22
 parser.add_argument('--batch_norm', default = 1, type = int); # indicates to use batch norm
 parser.add_argument('--feature_dim', default = 64, type = int); # dimension of output of CNN.
 parser.add_argument('--guide', default = 'Distance', type = str); # 'Distance' or 'None'
-parser.add_argument('--tau', default = 0.2, type = float); # used to determine necessity of distance guidance. still not sure how much value is appropriate.
-parser.add_argument('--reg', default = 0.2, type = float); # weight of reg_loss. still not sure how much valie is appropriate.
+parser.add_argument('--tau', default = 10.0, type = float); # used to determine necessity of distance guidance. still not sure how much value is appropriate.
+parser.add_argument('--reg', default = 0.5, type = float); # weight of reg_loss. still not sure how much value is appropriate.
 parser.add_argument('--Q', default = 10.0, type = float); # used for calculating hyper parameter alpha, beta, gamma.
 parser.add_argument('--neural_net', default = 'ResNet-50', type = str); # one of {VGG-11, VGG-13, VGG-16, VGG-19, ResNet-18, ResNet-34, ResNet-50, ResNet-101, ResNet-152}
 parser.add_argument('--device', default = 'cuda:0', type = str);
 
-datasets = ["CUFS", "CUFSF", "CUHK"];
 data_split = {'train': 0, 'valid': 1, 'test': 2};
-photo_sketch_idx = {"photo": 0, "sketch": 1, 'label': 2}
 
 def main(args):
     start_T = time.time();
@@ -90,7 +88,7 @@ def main(args):
 
     # Finishing
     model.neural_net.load_state_dict(th.load(result_path + "model.pth", map_location = args.device));
-    history["test_avgdist"], history["test_acc"] = utils.get_test_val(model.neural_net, labels[2], args.device, args.vbatch_size, args.data_per_figr);
+    history["test_avgdist"], history["test_acc"] = utils.get_test_val(model.neural_net, labels[2], args.device, args.vbatch_size);
     with open(result_path + "Training_Log.txt", 'a') as f:
         f.write("\nTraining Done ({})\nModel with Best performance on Validation set\nTest AvgDist: {:.4f}\tTest Acc: {:.4f}\n".format(
             utils.hms(int(time.time() - start_T)), history["test_avgdist"], history["test_acc"]
@@ -104,7 +102,6 @@ def main(args):
 
     with open(result_path + "history.pickle", "wb") as f:
         pickle.dump(history, f);
-
 
 if __name__ == '__main__':
     args = parser.parse_args();
