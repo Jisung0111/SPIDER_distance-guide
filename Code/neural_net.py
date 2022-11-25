@@ -18,8 +18,9 @@ class VGG(nn.Module):
                 in_ch = ch;
                 self.layers.append(nn.MaxPool2d(2, 2));
             self.layers.append(nn.AdaptiveAvgPool2d((7, 7)));
+            self.layers = nn.Sequential(*self.layers);
 
-            self.fc_layer = nn.ModuleList([
+            self.fc_layer = nn.Sequential(
                 nn.Linear(512 * 7 * 7, 4096),
                 nn.ReLU(True),
                 nn.Dropout(0.5),
@@ -27,7 +28,7 @@ class VGG(nn.Module):
                 nn.ReLU(True),
                 nn.Dropout(0.5),
                 nn.Linear(4096, feature_dim)
-            ]);
+            );
         else:
             raise ValueError("Wrong input size");
     
@@ -69,11 +70,13 @@ class ResNetBlock(nn.Module):
             self.layers.append(nn.ReLU(True));
             self.layers.append(nn.Conv2d(out_ch, expansion * out_ch, 1));
         if batch_norm: self.layers.append(nn.BatchNorm2d(expansion * out_ch));
+        self.layers = nn.Sequential(*self.layers);
 
         self.shortcut = nn.ModuleList();
         if stride != 1 or in_ch != expansion * out_ch:
             self.shortcut.append(nn.Conv2d(in_ch, expansion * out_ch, 1, stride));
-            if batch_norm: self.layers.append(nn.BatchNorm2d(expansion * out_ch));
+            if batch_norm: self.shortcut.append(nn.BatchNorm2d(expansion * out_ch));
+        self.shortcut = nn.Sequential(*self.shortcut);
         
         self.relu = nn.ReLU(True);
     
@@ -98,7 +101,8 @@ class ResNet(nn.Module):
                 for _ in range(n - 1):
                     self.layers.append(ResNetBlock(in_ch, ch, 1, batch_norm, BasicBlock, expansion));
             self.layers.append(nn.AdaptiveAvgPool2d((1, 1)));
-
+            self.layers = nn.Sequential(*self.layers);
+            
             self.fc_layer = nn.Linear(512 * expansion, feature_dim);
         else:
             raise ValueError("Wrong input size");
