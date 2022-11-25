@@ -57,8 +57,7 @@ class Model:
             self.scheduler = th.optim.lr_scheduler.ReduceLROnPlateau(
                 self.optimizer, 'min', factor = 0.1, patience = 10, min_lr = 1e-5); # according to the valid euclidean distance
         elif lr_scheduler == 'CosineAnnealingLR':
-            self.scheduler = th.optim.lr_scheduler.CosineAnnealingLR(
-                self.optimizer, T_max = 10);
+            self.scheduler = th.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max = 10);
         else: raise ValueError("Wrong learning rate scheduler");
 
     def learn(self, epoch, train_label, valid_label, vbatch_size):
@@ -78,17 +77,16 @@ class Model:
             dist = (feature_photo.unsqueeze(1) - feature_sketch.unsqueeze(0)).pow(2).sum(2);
             sqrt_dist = th.sqrt(dist); diag_dist = sqrt_dist[diag, diag];
             
-            with th.no_grad(): train_avgdist += th.sum(diag_dist);
+            with th.no_grad(): train_avgdist += th.sum(diag_dist).item();
 
             loss = self.alpha * th.sum(dist[diag, diag]) + \
                    self.beta * (th.sum(th.exp(sqrt_dist * self.gamma)) - th.sum(th.exp(sqrt_dist[diag, diag] * self.gamma)));
             
             if self.guide == 'Distance':
                 reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
-                loss = loss + (self.reg * self.alpha) * dist[reg_idx ^ 1, reg_idx];
+                loss = loss + (self.reg * self.alpha) * th.sum(dist[reg_idx ^ 1, reg_idx]);
             
             loss = loss / (self.batch_size * self.batch_size);
-            
             losses += loss.item();
 
             self.optimizer.zero_grad();
@@ -110,16 +108,16 @@ class Model:
         with th.no_grad():
             num_step = valid_label.shape[0] // vbatch_size;
             feature_photo, feature_sketch = [], [];
-            for step in range(num_step):
-                batch_photo, batch_sketch = utils.load_data(valid_label[step * vbatch_size: (step + 1) * vbatch_size], self.device);
+            for step in range(0, num_step, vbatch_size):
+                batch_photo, batch_sketch = utils.load_data(valid_label[step: step + vbatch_size], self.device);
                 feature_photo.append(self.neural_net(batch_photo)); feature_sketch.append(self.neural_net(batch_sketch));
             
             feature_photo, feature_sketch = th.cat(feature_photo, dim = 0), th.cat(feature_sketch, dim = 0);
             dist = (feature_photo.unsqueeze(1) - feature_sketch.unsqueeze(0)).pow(2).sum(2);
 
             diag = th.arange(dist.shape[0]);
-            valid_avgdist = th.mean(th.sqrt(dist[diag, diag]));
-            valid_acc = th.mean((th.argmin(dist, 1).cpu() == diag).float());
+            valid_avgdist = th.mean(th.sqrt(dist[diag, diag])).item();
+            valid_acc = th.mean((th.argmin(dist, 0).cpu() == diag).float()).item();
         
         if self.device != th.device("cpu"):
             with th.cuda.device(self.device): th.cuda.empty_cache();
