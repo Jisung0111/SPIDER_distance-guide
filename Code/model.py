@@ -60,8 +60,6 @@ class Model:
             self.scheduler = th.optim.lr_scheduler.CosineAnnealingLR(
                 self.optimizer, T_max = 10);
         else: raise ValueError("Wrong learning rate scheduler");
-        self.y1_idx = th.eye(self.batch_size, device = self.device);
-        self.y0_idx = th.ones((batch_size, batch_size), device = device) - self.y1_idx;
 
     def learn(self, epoch, train_label, valid_label, vbatch_size):
         N = train_label.shape[0];
@@ -83,7 +81,8 @@ class Model:
             with th.no_grad(): train_avgdist += th.sum(diag_dist);
 
             loss = self.alpha * th.sum(dist[diag, diag]) + \
-                   self.beta  * th.sum(th.exp(sqrt_dist * self.gamma) - th.exp(sqrt_dist[diag, diag] * self.gamma));
+                   self.beta * (th.sum(th.exp(sqrt_dist * self.gamma)) - th.sum(th.exp(sqrt_dist[diag, diag] * self.gamma)));
+            
             if self.guide == 'Distance':
                 reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
                 loss = loss + (self.reg * self.alpha) * dist[reg_idx ^ 1, reg_idx];
