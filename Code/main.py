@@ -58,6 +58,7 @@ def main(args):
 
     history = {
         "epoch": [],
+        "best_epoch": 0,
         "loss": [],
         "train_avgdist": [],
         "valid_avgdist": [],
@@ -67,31 +68,33 @@ def main(args):
     }
 
     # Learning Process
-    #try:
-    epoch = 0;
-    while epoch < args.epochs:
-        epoch, loss, train_avgdist, valid_avgdist, valid_acc = model.learn(epoch, labels[0], labels[1], args.vbatch_size);
-        history["epoch"].append(epoch);
-        history["loss"].append(loss);
-        history["train_avgdist"].append(train_avgdist);
-        history["valid_avgdist"].append(valid_avgdist);
-        history["valid_acc"].append(valid_acc);
+    try:
+        epoch = 0;
+        while epoch < args.epochs:
+            epoch, loss, train_avgdist, valid_avgdist, valid_acc = model.learn(epoch, labels[0], labels[1], args.vbatch_size);
+            history["epoch"].append(epoch);
+            history["loss"].append(loss);
+            history["train_avgdist"].append(train_avgdist);
+            history["valid_avgdist"].append(valid_avgdist);
+            history["valid_acc"].append(valid_acc);
+            with open(result_path + "Training_Log.txt", 'a') as f:
+                f.write("Epoch {} ({})\tLoss: {:.4f}\tTrain AvgDist: {:.4f}\tValid AvgDist: {:.4f}\tValid Acc: {:.4f}\n".format(
+                    epoch, utils.hms(int(time.time() - start_T)), loss, train_avgdist, valid_avgdist, valid_acc
+                ));
+            if max(history["valid_acc"]) == valid_acc:
+                history["best_epoch"] = epoch;
+                model.save_model(result_path + "model.pth");
+    except Exception as e:
+        print(repr(e));
         with open(result_path + "Training_Log.txt", 'a') as f:
-            f.write("Epoch {} ({})\tLoss: {:.4f}\tTrain AvgDist: {:.4f}\tValid AvgDist: {:.4f}\tValid Acc: {:.4f}\n".format(
-                epoch, utils.hms(int(time.time() - start_T)), loss, train_avgdist, valid_avgdist, valid_acc
-            ));
-        if max(history["valid_acc"]) == valid_acc: model.save_model(result_path + "model.pth");
-    # except Exception as e:
-    #     print(repr(e));
-    #     with open(result_path + "Training_Log.txt", 'a') as f:
-    #         f.write("Accidently Training Stopped\n");
+            f.write("Accidently Training Stopped\n");
 
     # Finishing
     model.neural_net.load_state_dict(th.load(result_path + "model.pth", map_location = args.device));
     history["test_avgdist"], history["test_acc"] = utils.get_test_val(model.neural_net, labels[2], args.device, args.vbatch_size);
     with open(result_path + "Training_Log.txt", 'a') as f:
-        f.write("\nTraining Done ({})\nModel with Best performance on Validation set\nTest AvgDist: {:.4f}\tTest Acc: {:.4f}\n".format(
-            utils.hms(int(time.time() - start_T)), history["test_avgdist"], history["test_acc"]
+        f.write("\nTraining Done ({})\nModel with Best performance on Validation set (Epoch: {})\nTest AvgDist: {:.4f}\tTest Acc: {:.4f}\n".format(
+            history["best_epoch"], utils.hms(int(time.time() - start_T)), history["test_avgdist"], history["test_acc"]
         ));
 
     utils.plot_graph(history, result_path);
@@ -100,7 +103,7 @@ def main(args):
     if args.device != "cpu":
         with th.cuda.device(args.device):th.cuda.empty_cache();
 
-    with open(result_path + "history.pickle", "wb") as f:
+    with open(result_path + "history.pkl", "wb") as f:
         pickle.dump(history, f);
 
 if __name__ == '__main__':
