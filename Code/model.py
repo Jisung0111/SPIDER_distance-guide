@@ -55,7 +55,7 @@ class Model:
         if lr_scheduler == 'None': pass
         elif lr_scheduler == 'ReduceLROnPlateau':
             self.scheduler = th.optim.lr_scheduler.ReduceLROnPlateau(
-                self.optimizer, 'min', factor = 0.1, patience = 10, min_lr = 1e-5); # according to the valid euclidean distance
+                self.optimizer, 'min', factor = 0.1, patience = 5, min_lr = 1e-5); # according to the valid euclidean distance
         elif lr_scheduler == 'CosineAnnealingLR':
             self.scheduler = th.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max = 10);
         else: raise ValueError("Wrong learning rate scheduler");
