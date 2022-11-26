@@ -57,7 +57,7 @@ def plot_graph(history, result_path):
     plt.plot(history["epoch"], history["train_avgdist"], label = "Train");
     plt.plot(history["epoch"], history["valid_avgdist"], label = "Valid");
     plt.xlabel("Epoch");
-    plt.ylabel("Squared Euclidean Distance");
+    plt.ylabel("Euclidean Distance");
     plt.legend();
 
     plt.subplot(1, 3, 3);
