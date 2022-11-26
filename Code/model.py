@@ -106,9 +106,8 @@ class Model:
         # check accuracy on validation set;
         self.neural_net.eval();
         with th.no_grad():
-            num_step = valid_label.shape[0] // vbatch_size;
             feature_photo, feature_sketch = [], [];
-            for step in range(0, num_step, vbatch_size):
+            for step in range(0, valid_label.shape[0], vbatch_size):
                 batch_photo, batch_sketch = utils.load_data(valid_label[step: step + vbatch_size], self.device);
                 feature_photo.append(self.neural_net(batch_photo)); feature_sketch.append(self.neural_net(batch_sketch));
             
