@@ -4,13 +4,13 @@ import argparse
 from model import Model
 import json
 import pickle
-import os
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser();
 parser.add_argument('--result');
 pre_args = parser.parse_args();
 BATCH_SIZE = 1000; # should divide 16000 and 2000,  be divisible by 10
-THRESHOLDS = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 200.0];
+THRESHOLDS = [i for i in np.linspace(0, 50, 501)];
 HITS = [1, 3, 5, 10, 20, 30, 50, 100, 200, 500, 1000];
 
 def do_review(model, device):
@@ -34,7 +34,6 @@ def do_review(model, device):
             for p_i in range(0, N, BATCH_SIZE):
                 batch_photo = th.from_numpy(np.stack([np.load("../Data/Preprocessed/{}_{}p.npy".format(l[0], l[1])) for l in labels[split][p_i: p_i + BATCH_SIZE]])).to(device);
                 f_photo.append(model(batch_photo));
-            print("s_i", s_i);
             dist = th.sqrt((th.cat(f_photo, dim = 0).unsqueeze(1) - f_sketch.unsqueeze(0)).pow(2).sum(2));
             
             del batch_sketch, batch_photo, f_photo, f_sketch;
@@ -121,6 +120,120 @@ def main(args, result_path):
     model.neural_net.load_state_dict(th.load(result_path + "model.pth", map_location = device));
     with th.no_grad(): review = do_review(model.neural_net, device);
     with open(result_path + "review.pkl", "wb") as f: pickle.dump(review, f);
+
+    color = [[[1.0, 0.1, 0.1, 1.0], [0.8, 0.2, 0.2, 1.0], [0.7, 0.4, 0.4, 1.0]],
+             [[0.1, 1.0, 0.1, 1.0], [0.2, 0.8, 0.2, 1.0], [0.4, 0.7, 0.4, 1.0]],
+             [[0.1, 0.1, 1.0, 1.0], [0.2, 0.2, 0.8, 1.0], [0.4, 0.4, 0.7, 1.0]]];
+    gap = 0.1;
+    smooth = lambda x: [x[i] if i < 3 or len(x) - 4 < i else sum([x[j] for j in range(i - 3, i + 4)]) / 7 for i in range(len(x))];
+
+    plt.figure(figsize = (24, 14));
+
+    plt.subplot(3, 4, 1);
+    plt.title("MR (Test. Zero: {:.1f}, Few: {:.1f})".format(review["test_z_mr"], review["test_f_mr"]));
+    plt.ylabel("Mean Rank");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_z_mr".format(split)] for split in ["train", "valid", "test"]], label = "MR Zero");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_f_mr".format(split)] for split in ["train", "valid", "test"]], label = "MR Few");
+    plt.legend();
+
+    plt.subplot(3, 4, 2);
+    plt.title("MRR (Test. Zero: {:.4f}, Few: {:.4f})".format(review["test_z_mrr"], review["test_f_mrr"]));
+    plt.ylabel("Mean Reciprocal Rank");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_z_mrr".format(split)] for split in ["train", "valid", "test"]], label = "MRR Zero");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_f_mrr".format(split)] for split in ["train", "valid", "test"]], label = "MRR Few");
+    plt.legend();
+
+    plt.subplot(3, 4, 3);
+    plt.title("Accuracy (Test. Zero: {:.4f}, Few: {:.4f})".format(review["test_z_hit@1"], review["test_f_hit@1"]));
+    plt.ylabel("Accuracy");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_z_hit@1".format(split)] for split in ["train", "valid", "test"]], label = "Accuracy Zero");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_f_hit@1".format(split)] for split in ["train", "valid", "test"]], label = "Accuracy Few");
+    plt.legend();
+
+    plt.subplot(3, 4, 4);
+    plt.title("Hit @ 5 (Test. Zero: {:.4f}, Few: {:.4f})".format(review["test_z_hit@5"], review["test_f_hit@5"]));
+    plt.ylabel("Hit @ 5");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_z_hit@5".format(split)] for split in ["train", "valid", "test"]], label = "Hit@5 Zero");
+    plt.plot(["Train", "Valid", "Test"], [review["{}_f_hit@5".format(split)] for split in ["train", "valid", "test"]], label = "Hit@5 Few");
+    plt.legend();
+
+    plt.subplot(3, 2, 3);
+    plt.title("Distance Cumulative Density");
+    plt.xlabel("d");
+    plt.ylabel("Ratio of Photos with Dist. <= d");
+    max_val = 0;
+    for idx, (s_name, split) in enumerate(zip(['train_', 'valid_', 'test_'], ["Train", "Valid", "Test"])):
+        N = review[s_name + "max_rank"];
+        arr = smooth([review[s_name + "z_thres{:.1f}".format(thres)] / N / 10 for thres in THRESHOLDS]);
+        plt.plot(THRESHOLDS, arr, label = split + " Zero", color = color[idx][0]);
+        max_val = max(max_val, max(arr));
+
+        arr = smooth([review[s_name + "f_thres{:.1f}".format(thres)] / N for thres in THRESHOLDS]);
+        plt.plot(THRESHOLDS, arr, label = split + " Few", color = color[idx][1]);
+        max_val = max(max_val, max(arr));
+
+        arr = smooth([review[s_name + "thres{:.1f}".format(thres)] / (N * N) for thres in THRESHOLDS]);
+        plt.plot(THRESHOLDS, arr, label = split + " ALL", color = color[idx][2]);
+        max_val = max(max_val, max(arr));
+
+    for idx, s_name in enumerate(['train_', 'valid_', 'test_']):
+        plt.plot([review[s_name + "z_avg_dist"]] * 2, [0, max_val], color = color[idx][0]);
+        plt.plot([review[s_name + "f_avg_dist"]] * 2, [0, max_val], color = color[idx][1]);
+        plt.plot([review[s_name + "avg_dist"]] * 2, [0, max_val], color = color[idx][2]);
+    plt.legend();
+
+    plt.subplot(3, 2, 4);
+    plt.title("Distance Density");
+    plt.xlabel("d");
+    plt.ylabel("Ratio of Photos with d-{} < Dist. <= d".format(gap));
+    max_val = 0;
+    for idx, (s_name, split) in enumerate(zip(['train_', 'valid_', 'test_'], ["Train", "Valid", "Test"])):
+        N = review[s_name + "max_rank"];
+        arr = smooth([(review[s_name + "z_thres{:.1f}".format(thres)] - review.get(s_name + "z_thres{:.1f}".format(thres - gap), 0)) / N / 10 for thres in THRESHOLDS]);
+        plt.plot(THRESHOLDS, arr, label = split + " Zero", color = color[idx][0]);
+        max_val = max(max_val, max(arr));
+
+        arr = smooth([(review[s_name + "f_thres{:.1f}".format(thres)] - review.get(s_name + "f_thres{:.1f}".format(thres - gap), 0)) / N for thres in THRESHOLDS]);
+        plt.plot(THRESHOLDS, arr, label = split + " Few", color = color[idx][1]);
+        max_val = max(max_val, max(arr));
+
+        arr = smooth([(review[s_name + "thres{:.1f}".format(thres)] - review.get(s_name + "thres{:.1f}".format(thres - gap), 0)) / (N * N) for thres in THRESHOLDS]);
+        plt.plot(THRESHOLDS, arr, label = split + " ALL", color = color[idx][2]);
+        max_val = max(max_val, max(arr));
+
+    for idx, s_name in enumerate(['train_', 'valid_', 'test_']):
+        plt.plot([review[s_name + "z_avg_dist"]] * 2, [0, max_val], color = color[idx][0]);
+        plt.plot([review[s_name + "f_avg_dist"]] * 2, [0, max_val], color = color[idx][1]);
+        plt.plot([review[s_name + "avg_dist"]] * 2, [0, max_val], color = color[idx][2]);
+    plt.legend();
+
+    ax = plt.subplot(3, 1, 3);
+    ax.set_title("Hit@K");
+    ax.set_xlabel("K");
+    ax.set_ylabel("Hit@K");
+    x = np.arange(len(HITS));
+
+    bar_width = 0.15;
+    ax.bar(x - 2.5 * bar_width, [review["train_z_hit@{}".format(hit)] for hit in HITS], width = bar_width * 0.9, label = "Train Zero", color = color[0][0]);
+    ax.bar(x - 1.5 * bar_width, [review["train_f_hit@{}".format(hit)] for hit in HITS], width = bar_width * 0.9, label = "Train Few", color = color[0][1]);
+    ax.bar(x - 0.5 * bar_width, [review["valid_z_hit@{}".format(hit)] for hit in HITS], width = bar_width * 0.9, label = "Valid Zero", color = color[1][0]);
+    ax.bar(x + 0.5 * bar_width, [review["valid_f_hit@{}".format(hit)] for hit in HITS], width = bar_width * 0.9, label = "Valid Few", color = color[1][1]);
+    ax.bar(x + 1.5 * bar_width, [review["test_z_hit@{}".format(hit)] for hit in HITS], width = bar_width * 0.9, label = "Test Zero", color = color[2][0]);
+    ax.bar(x + 2.5 * bar_width, [review["test_f_hit@{}".format(hit)] for hit in HITS], width = bar_width * 0.9, label = "Test Few", color = color[2][1]);
+
+    ax.legend();
+    ax.set_xticks(x);
+    ax.set_xticklabels(HITS);
+
+    for bar in ax.patches:
+        bar_value = bar.get_height();
+        text = "{:.3f}".format(bar_value);
+        text_x = bar.get_x() +  bar.get_width() / 2;
+        text_y = bar.get_y() + bar_value;
+        bar_color = bar.get_facecolor();
+        ax.text(text_x, text_y, text, ha = "center", va = "bottom", color = bar_color, size = 6);
+
+    plt.savefig(result_path + "review.jpg", dpi = 300);
 
 if __name__ == '__main__':
     result_path = "../Results/Result" + str(pre_args.result) + "/";
