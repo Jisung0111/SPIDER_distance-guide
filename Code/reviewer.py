@@ -183,7 +183,8 @@ def main(args, result_path):
     plt.legend();
 
     plt.subplot(3, 2, 4);
-    plt.title("Distance Density");
+    plt.title("Distance Density (Test. Zero: {:.1f} +/- {:.1f}, Few: {:.1f} +/- {:.1f}, ALL: {:.1f})".format(
+        review["test_z_avg_dist"], review["test_z_std_dist"], review["test_f_avg_dist"], review["test_f_std_dist"], review["test_avg_dist"]));
     plt.xlabel("d");
     plt.ylabel("Ratio of Photos with d-{} < Dist. <= d".format(gap));
     max_val = 0;
