@@ -33,6 +33,7 @@ class Model:
         device,
         tau,
         reg,
+        loss_setting,
         Q
     ):
         self.batch_size = batch_size;
@@ -55,17 +56,22 @@ class Model:
         if lr_scheduler == 'None': pass
         elif lr_scheduler == 'ReduceLROnPlateau':
             self.scheduler = th.optim.lr_scheduler.ReduceLROnPlateau(
-                self.optimizer, 'min', factor = 0.1, patience = 5, min_lr = 1e-5); # according to the valid euclidean distance
+                self.optimizer, 'max', factor = 0.1, patience = 6, min_lr = 2e-6); # according to the valid euclidean distance
         elif lr_scheduler == 'CosineAnnealingLR':
             self.scheduler = th.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max = 10);
         else: raise ValueError("Wrong learning rate scheduler");
+
+        self.loss_setting = loss_setting;
+        if loss_setting == 1:
+            self.y1_idx = th.eye(self.batch_size, device = self.device);
+            self.y0_idx = th.ones((batch_size, batch_size), device = device) - self.y1_idx;
 
     def learn(self, epoch, train_label, valid_label, vbatch_size):
         N = train_label.shape[0];
         hN, hB, num_step = N // 2, self.batch_size // 2, N // self.batch_size;
         idcs, diag = np.random.permutation(hN), th.arange(self.batch_size);
         pair_idcs = np.array([i + np.random.permutation(self.data_per_figr) for i in range(0, N, self.data_per_figr)]).reshape((hN, 2));
-        losses, train_avgdist = 0, 0;
+        losses, train_dists = 0, [];
 
         self.neural_net.train();
         for step in range(num_step):
@@ -77,15 +83,25 @@ class Model:
             dist = (feature_photo.unsqueeze(1) - feature_sketch.unsqueeze(0)).pow(2).sum(2);
             sqrt_dist = th.sqrt(dist); diag_dist = sqrt_dist[diag, diag];
             
-            with th.no_grad(): train_avgdist += th.sum(diag_dist).item();
+            with th.no_grad(): train_dists += diag_dist.detach().clone().cpu().tolist();
 
-            loss = self.alpha * th.sum(dist[diag, diag]) + \
-                   self.beta * (th.sum(th.exp(sqrt_dist * self.gamma)) - th.sum(th.exp(sqrt_dist[diag, diag] * self.gamma)));
-            
-            if self.guide == 'Distance':
-                reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
-                loss = loss + (self.reg * self.alpha) * th.sum(dist[reg_idx ^ 1, reg_idx]);
-            
+            if self.loss_setting == 1:
+                Y1_calc_idx, Y0_calc_idx = self.y1_idx.clone(), self.y0_idx.clone();
+                if self.guide == 'Distance':
+                    reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
+                    Y1_calc_idx[reg_idx, reg_idx] = 0.0; Y1_calc_idx[reg_idx ^ 1, reg_idx] = 1.0;
+                    Y0_calc_idx[reg_idx, reg_idx] = 1.0; Y0_calc_idx[reg_idx ^ 1, reg_idx] = 0.0;
+                
+                loss = self.alpha * th.sum(Y1_calc_idx * dist) + self.beta * th.sum(Y0_calc_idx * th.exp(sqrt_dist * self.gamma));
+
+            else:
+                loss = self.alpha * th.sum(dist[diag, diag]) + \
+                    self.beta * (th.sum(th.exp(sqrt_dist * self.gamma)) - th.sum(th.exp(diag_dist * self.gamma)));
+                
+                if self.guide == 'Distance':
+                    reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
+                    loss = loss + (self.reg * self.alpha) * th.sum(dist[reg_idx ^ 1, reg_idx]);
+                
             loss = loss / (self.batch_size * self.batch_size);
             losses += loss.item();
 
@@ -101,7 +117,9 @@ class Model:
             with th.cuda.device(self.device): th.cuda.empty_cache();
 
         losses /= num_step;
-        train_avgdist /= N;
+        train_avgdist, train_stddist = np.mean(train_dists), np.std(train_dists);
+        train_distribution = [0 for _ in range(int(10 * np.max(train_dists)) + 2)];
+        for d in train_dists: train_distribution[int(10 * d)] += 1;
         
         # check accuracy on validation set;
         self.neural_net.eval();
@@ -122,9 +140,9 @@ class Model:
             with th.cuda.device(self.device): th.cuda.empty_cache();
         
         if self.lr_scheduler == 'ReduceLROnPlateau':
-            self.scheduler.step(valid_avgdist);
+            self.scheduler.step(valid_acc);
         
-        return epoch + 1, losses, train_avgdist, valid_avgdist, valid_acc;
+        return epoch + 1, losses, train_avgdist, train_stddist, train_distribution, valid_avgdist, valid_acc;
     
     def save_model(self, file_path):
         th.save(self.neural_net.state_dict(), file_path);
