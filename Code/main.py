@@ -20,6 +20,7 @@ parser.add_argument('--lr', default = 0.001, type = float);
 parser.add_argument('--lr_scheduler', default = 'None', type = str); # one of [None, ReduceLROnPlateau, CosineAnnealingLR]
 parser.add_argument('--input_size', default = '224_224', type = str); # 224 * 224 * 3 -> '224_224' # Original VGG-19 and Resnet get 224x224 input.
 parser.add_argument('--batch_norm', default = 1, type = int); # indicates to use batch norm
+parser.add_argument('--loss_setting', default = 0, type = int); # if loss setting is 0, general loss. or 1, only changes Y.
 parser.add_argument('--feature_dim', default = 64, type = int); # dimension of output of CNN.
 parser.add_argument('--guide', default = 'Distance', type = str); # 'Distance' or 'None'
 parser.add_argument('--tau', default = 10.0, type = float); # used to determine necessity of distance guidance. still not sure how much value is appropriate.
@@ -49,6 +50,7 @@ def main(args):
         th.device(args.device),
         args.tau,
         args.reg,
+        args.loss_setting,
         args.Q
     );
 
@@ -71,30 +73,31 @@ def main(args):
     try:
         epoch = 0;
         while epoch < args.epochs:
-            epoch, loss, train_avgdist, valid_avgdist, valid_acc = model.learn(epoch, labels[0], labels[1], args.vbatch_size);
+            epoch, loss, train_avgdist, train_stddist, train_distribution, valid_avgdist, valid_acc = \
+                model.learn(epoch, labels[0], labels[1], args.vbatch_size);
             history["epoch"].append(epoch);
             history["loss"].append(loss);
             history["train_avgdist"].append(train_avgdist);
             history["valid_avgdist"].append(valid_avgdist);
             history["valid_acc"].append(valid_acc);
             with open(result_path + "Training_Log.txt", 'a') as f:
-                f.write("Epoch {} ({})\tLoss: {:.4f}\tTrain AvgDist: {:.4f}\tValid AvgDist: {:.4f}\tValid Acc: {:.4f}\n".format(
-                    epoch, utils.hms(int(time.time() - start_T)), loss, train_avgdist, valid_avgdist, valid_acc
+                f.write("Epoch {} ({})\tLoss: {:.4f}\tTrain Dist: {:.4f} +/- {:.4f}\tValid AvgDist: {:.4f}\tValid Acc: {:.4f}\n".format(
+                    epoch, utils.hms(int(time.time() - start_T)), loss, train_avgdist, train_stddist, valid_avgdist, valid_acc
                 ));
             if max(history["valid_acc"]) == valid_acc:
                 history["best_epoch"] = epoch;
                 model.save_model(result_path + "model.pth");
+            utils.plot_train_distribution(result_path, epoch, train_distribution, train_avgdist, args.tau);
     except Exception as e:
-        print(repr(e));
         with open(result_path + "Training_Log.txt", 'a') as f:
-            f.write("Accidently Training Stopped\n");
+            f.write("Accidently Training Stopped\nError Message: {}".format(repr(e)));
 
     # Finishing
     model.neural_net.load_state_dict(th.load(result_path + "model.pth", map_location = args.device));
     history["test_avgdist"], history["test_acc"] = utils.get_test_val(model.neural_net, labels[2], args.device, args.vbatch_size);
     with open(result_path + "Training_Log.txt", 'a') as f:
-        f.write("\nTraining Done ({})\nModel with Best performance on Validation set (Epoch: {})\nTest AvgDist: {:.4f}\tTest Acc: {:.4f}\n".format(
-            history["best_epoch"], utils.hms(int(time.time() - start_T)), history["test_avgdist"], history["test_acc"]
+        f.write("\nTraining Done ({})\nModel with Best Accuracy on Validation set (Epoch: {})\nTest AvgDist: {:.4f}\tTest Acc: {:.4f}\n".format(
+            utils.hms(int(time.time() - start_T)), history["best_epoch"], history["test_avgdist"], history["test_acc"]
         ));
 
     utils.plot_graph(history, result_path);
