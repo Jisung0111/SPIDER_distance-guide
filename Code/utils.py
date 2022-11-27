@@ -54,8 +54,8 @@ def plot_graph(history, result_path):
 
     plt.subplot(1, 3, 2);
     plt.title("Avg. Distance (Test: {:.4f})".format(history["test_avgdist"]));
-    plt.plot(history["epoch"], history["train_avgdist"], label = "Train");
     plt.plot(history["epoch"], history["valid_avgdist"], label = "Valid");
+    plt.plot(history["epoch"], history["train_avgdist"], label = "Train");
     plt.xlabel("Epoch");
     plt.ylabel("Euclidean Distance");
     plt.legend();
@@ -68,7 +68,29 @@ def plot_graph(history, result_path):
     plt.legend();
 
     plt.savefig(result_path + "Log.jpg");
+    plt.clf();
+    plt.close('all');
 
 def load_data(label, device):
     return th.from_numpy(np.stack([np.load("../Data/Preprocessed/{}_{}p.npy".format(l[0], l[1])) for l in label])).to(device), \
            th.from_numpy(np.stack([np.load("../Data/Preprocessed/{}_{}s.npy".format(l[0], l[1])) for l in label])).to(device);
+
+def plot_train_distribution(result_path, epoch, train_distribution, train_avgdist, tau):
+    result_path = result_path + "TrainDistanceDensity/";
+    if epoch == 1: os.mkdir(result_path);
+
+    sum_td = sum(train_distribution);
+    train_distribution = [i / sum_td for i in train_distribution];
+
+    plt.figure(figsize = (6, 4));
+    plt.title("Train Distance Density (Epoch {})".format(epoch));
+    plt.plot(np.arange(len(train_distribution)) / 10.0, train_distribution, color = [0, 0, 1, 1], label = "Density");
+    plt.plot([train_avgdist] * 2, [0, max(train_distribution)], color = [0, 1, 0, 1], label = "Avg", linewidth = 0.6);
+    plt.plot([tau] * 2, [0, max(train_distribution)], color = [1, 0, 0, 1], label = "Tau", linewidth = 0.3);
+    plt.xlabel("Distance of a Pair");
+    plt.ylabel("Density");
+    plt.legend();
+
+    plt.savefig(result_path + "{}.jpg".format(epoch), dpi = 300);
+    plt.clf();
+    plt.close('all');
