@@ -114,6 +114,7 @@ def main(args, result_path):
         device,
         args.tau,
         args.reg,
+        args.loss_setting,
         args.Q
     );
     
