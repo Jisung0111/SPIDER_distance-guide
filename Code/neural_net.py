@@ -15,7 +15,7 @@ class VGG(nn.Module):
                     self.layers.append(nn.Conv2d(in_ch, ch, 3, 1, 1));
                     if batch_norm: self.layers.append(nn.BatchNorm2d(ch));
                     self.layers.append(nn.ReLU(True));
-                in_ch = ch;
+                    in_ch = ch;
                 self.layers.append(nn.MaxPool2d(2, 2));
             self.layers.append(nn.AdaptiveAvgPool2d((7, 7)));
             self.layers = nn.Sequential(*self.layers);
@@ -49,7 +49,6 @@ def VGG_16(input_size, feature_dim, batch_norm):
 
 def VGG_19(input_size, feature_dim, batch_norm):
     return VGG(input_size, feature_dim, batch_norm, [2, 2, 4, 4, 4]);
-
 
 
 class ResNetBlock(nn.Module):
