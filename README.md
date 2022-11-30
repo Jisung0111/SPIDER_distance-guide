@@ -2,7 +2,7 @@
 
 ## 1. Data Pre-processsing
     bash preprocess.sh
-Data will be automatically pre-processed and be stored in Data/Preprocessed/.
+Data will be automatically pre-processed and stored in Data/Preprocessed/.
 ## 2. Training
     cd Code
     python main.py
