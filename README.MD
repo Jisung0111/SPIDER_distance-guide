@@ -33,3 +33,8 @@ python main.py --lr 0.001 --neural_net ResNet-50 --seed 1
     python reviewer.py --result 1 --max_thres 10
 > The argument 'result' means evaluation of "Results/Result{result}". (**Check the Directory**), After evaluation, increase or decrease 'max_thres' and then re-evaluate if the range of x axis of Distance Density on review.jpg is insufficient or too much.
 + Basic Metrics such as Accuracy or Average Distance are calculated during training. However, we sometimes need to add or fix some metrics even after training is done. so metrics taking a lot computation such as MR, MRR, Hit@K, Distribution of Distances are separated.
++ The following files will be created after evaluation is done.
+    + review.jpg: Contains MR, MRR, Accuracy, Hit@K, Distance Density using model.pth which has shown the best accuracy on few shot setting.
+    + review.pkl: Contains the values used to plot graphs on review.jpg in pickle file in order to load easily.
+    + review0.jpg: Contains MR, MRR, Accuracy, Hit@K, Distance Density using model.pth which has shown the best accuracy on zero shot setting.
+    + review0.pkl: Contains the values used to plot graphs on review0.jpg in pickle file in order to load easily.
