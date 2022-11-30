@@ -59,10 +59,12 @@ class Model:
                 self.optimizer, 'max', factor = 0.1, patience = 6, min_lr = 2e-6); # according to the valid euclidean distance
         elif lr_scheduler == 'CosineAnnealingLR':
             self.scheduler = th.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max = 10);
+        elif lr_scheduler == 'StepLR':
+            self.scheduler = th.optim.lr_scheduler.StepLR(self.optimizer, step_size = 10, gamma = 0.3);
         else: raise ValueError("Wrong learning rate scheduler");
 
         self.loss_setting = loss_setting;
-        if loss_setting == 1:
+        if loss_setting == 1 or loss_setting == 3:
             self.y1_idx = th.eye(self.batch_size, device = self.device);
             self.y0_idx = th.ones((batch_size, batch_size), device = device) - self.y1_idx;
 
@@ -72,6 +74,7 @@ class Model:
         idcs, diag = np.random.permutation(hN), th.arange(self.batch_size);
         pair_idcs = np.array([i + np.random.permutation(self.data_per_figr) for i in range(0, N, self.data_per_figr)]).reshape((hN, 2));
         losses, train_dists = 0, [];
+        N_DIAG = th.eye(10, dtype = bool) ^ True;
 
         self.neural_net.train();
         for step in range(num_step):
@@ -93,10 +96,27 @@ class Model:
                     Y0_calc_idx[reg_idx, reg_idx] = 1.0; Y0_calc_idx[reg_idx ^ 1, reg_idx] = 0.0;
                 
                 loss = self.alpha * th.sum(Y1_calc_idx * dist) + self.beta * th.sum(Y0_calc_idx * th.exp(sqrt_dist * self.gamma));
+            
+            elif self.loss_setting == 2:
+                loss = self.alpha * th.sum(dist[diag, diag]) + \
+                       self.beta * (th.sum(th.exp(dist * self.gamma)) - th.sum(th.exp(dist[diag, diag] * self.gamma)));
+                
+                if self.guide == 'Distance':
+                    reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
+                    loss = loss + (self.reg * self.alpha) * th.sum(dist[reg_idx ^ 1, reg_idx]);
+            
+            elif self.loss_setting == 3:
+                Y1_calc_idx, Y0_calc_idx = self.y1_idx.clone(), self.y0_idx.clone();
+                if self.guide == 'Distance':
+                    reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
+                    Y1_calc_idx[reg_idx, reg_idx] = 0.0; Y1_calc_idx[reg_idx ^ 1, reg_idx] = 1.0;
+                    Y0_calc_idx[reg_idx, reg_idx] = 1.0; Y0_calc_idx[reg_idx ^ 1, reg_idx] = 0.0;
+                
+                loss = self.alpha * th.sum(Y1_calc_idx * dist) + self.beta * th.sum(Y0_calc_idx * th.exp(dist * self.gamma));
 
             else:
                 loss = self.alpha * th.sum(dist[diag, diag]) + \
-                    self.beta * (th.sum(th.exp(sqrt_dist * self.gamma)) - th.sum(th.exp(diag_dist * self.gamma)));
+                       self.beta * (th.sum(th.exp(sqrt_dist * self.gamma)) - th.sum(th.exp(diag_dist * self.gamma)));
                 
                 if self.guide == 'Distance':
                     reg_idx = th.argwhere(diag_dist < self.tau).view(-1);
@@ -132,17 +152,26 @@ class Model:
             feature_photo, feature_sketch = th.cat(feature_photo, dim = 0), th.cat(feature_sketch, dim = 0);
             dist = (feature_photo.unsqueeze(1) - feature_sketch.unsqueeze(0)).pow(2).sum(2);
 
-            diag = th.arange(dist.shape[0]);
-            valid_avgdist = th.mean(th.sqrt(dist[diag, diag])).item();
-            valid_acc = th.mean((th.argmin(dist, 0).cpu() == diag).float()).item();
+            diag = th.arange(dist.shape[0], device = self.device);
+            valid_f_dist = th.sqrt(dist[diag, diag]);
+            valid_f_avgdist, valid_f_stddist = th.mean(valid_f_dist).item(), th.std(valid_f_dist).item();
+            valid_f_acc = th.mean((th.argmin(dist, 0) == diag).float()).item();
+
+            dist[diag, diag] = th.max(dist) + 1.0;
+            valid_z_dist = th.sqrt(th.stack([dist[i: i + 10, i: i + 10][N_DIAG] for i in range(0, valid_label.shape[0], 10)]));
+            valid_z_avgdist, valid_z_stddist = th.mean(valid_z_dist).item(), th.mean(th.std(valid_z_dist, dim = 1)).item();
+            valid_z_acc = th.mean((th.argmin(dist, 0).div(10, rounding_mode = 'trunc') == diag.div(10, rounding_mode = 'trunc')).float()).item();
         
         if self.device != th.device("cpu"):
             with th.cuda.device(self.device): th.cuda.empty_cache();
         
         if self.lr_scheduler == 'ReduceLROnPlateau':
-            self.scheduler.step(valid_acc);
+            self.scheduler.step(valid_f_acc);
+        elif self.lr_scheduler == 'StepLR':
+            self.scheduler.step();
         
-        return epoch + 1, losses, train_avgdist, train_stddist, train_distribution, valid_avgdist, valid_acc;
+        return epoch + 1, losses, train_avgdist, train_stddist, train_distribution, \
+               valid_f_avgdist, valid_f_stddist, valid_f_acc, valid_z_avgdist, valid_z_stddist, valid_z_acc;
     
     def save_model(self, file_path):
         th.save(self.neural_net.state_dict(), file_path);
