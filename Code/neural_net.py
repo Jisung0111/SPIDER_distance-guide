@@ -8,7 +8,7 @@ class VGG(nn.Module):
     def __init__(self, input_size, feature_dim, batch_norm, VGG_layers):
         super(VGG, self).__init__();
         if input_size == "224_224":
-            self.layers = nn.ModuleList();
+            self.layers = [];
             in_ch = 3;
             for n, ch in zip(VGG_layers, [64, 128, 256, 512, 512]):
                 for _ in range(n):
@@ -20,14 +20,15 @@ class VGG(nn.Module):
             self.layers.append(nn.AdaptiveAvgPool2d((7, 7)));
             self.layers = nn.Sequential(*self.layers);
 
+            mid_dim = 1024;
             self.fc_layer = nn.Sequential(
-                nn.Linear(512 * 7 * 7, 4096),
+                nn.Linear(512 * 7 * 7, mid_dim),
                 nn.ReLU(True),
                 nn.Dropout(0.5),
-                nn.Linear(4096, 4096),
+                nn.Linear(mid_dim, mid_dim),
                 nn.ReLU(True),
                 nn.Dropout(0.5),
-                nn.Linear(4096, feature_dim)
+                nn.Linear(mid_dim, feature_dim)
             );
         else:
             raise ValueError("Wrong input size");
@@ -55,7 +56,7 @@ class ResNetBlock(nn.Module):
     def __init__(self, in_ch, out_ch, stride, batch_norm, BasicBlock, expansion):
         super(ResNetBlock, self).__init__();
 
-        self.layers = nn.ModuleList();
+        self.layers = [];
         if BasicBlock:
             self.layers.append(nn.Conv2d(in_ch, out_ch, 3, stride, 1));
             if batch_norm: self.layers.append(nn.BatchNorm2d(out_ch));
@@ -72,7 +73,7 @@ class ResNetBlock(nn.Module):
         if batch_norm: self.layers.append(nn.BatchNorm2d(expansion * out_ch));
         self.layers = nn.Sequential(*self.layers);
 
-        self.shortcut = nn.ModuleList();
+        self.shortcut = [];
         if stride != 1 or in_ch != expansion * out_ch:
             self.shortcut.append(nn.Conv2d(in_ch, expansion * out_ch, 1, stride));
             if batch_norm: self.shortcut.append(nn.BatchNorm2d(expansion * out_ch));
@@ -87,7 +88,7 @@ class ResNet(nn.Module):
     def __init__(self, input_size, feature_dim, batch_norm, ResNet_layers, BasicBlock):
         super(ResNet, self).__init__();
         if input_size == "224_224":
-            self.layers = nn.ModuleList();
+            self.layers = [];
             expansion = 1 if BasicBlock else 4;
 
             in_ch = 64;
