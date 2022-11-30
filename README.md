@@ -16,7 +16,7 @@ Data will be automatically pre-processed and stored in Data/Preprocessed/.
         + One of (VGG-11, VGG-13, VGG-16, VGG-19, ResNet-18, ResNet-34, ResNet-50, ResNet-101, ResNet-152)
     + Device (e.g. --device cpu or --device cuda:1)
     + You can check more parameters on Code/main.py line14:30.
-+ You can apply parameters by adding arguments. For example,
++ You can apply parameters by adding arguments. **For example**,
 ```
 python main.py --lr 0.001 --neural_net ResNet-50 --seed 1
 ```
