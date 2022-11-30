@@ -1,5 +1,5 @@
 cd Data
-tar -zxvf sketch.tar.gz Photo
-tar -zxvf photo.tar.gz Sketch
-mkdir Proprocessed
+tar -zxf sketch.tar.gz
+tar -zxf photo.tar.gz
+mkdir Preprocessed
 python SplitDivision.py
