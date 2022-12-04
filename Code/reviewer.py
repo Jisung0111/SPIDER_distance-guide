@@ -8,12 +8,10 @@ import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser();
 parser.add_argument('--result');
-parser.add_argument('--max_thres', default = 50, type = int);
-parser.add_argument('--reject', default = 0, type = int);
+parser.add_argument('--max_thres', default = 10, type = float);
 pre_args = parser.parse_args();
-BATCH_SIZE = 1000; # should divide 16000 and 2000,  be divisible by 10
-GAP = 0.1; # means gap of THRESHOLDS
-THRESHOLDS = [i for i in np.linspace(0, pre_args.max_thres, 1 + 10 * pre_args.max_thres)];
+THRESHOLDS = [i for i in np.linspace(0, pre_args.max_thres, 101)];
+GAP = THRESHOLDS[1]; # means gap of THRESHOLDS
 HITS = [1, 3, 5, 10, 20, 30, 50, 100, 200, 500, 1000];
 
 def do_review(model, device, reject):
@@ -56,7 +54,7 @@ def do_review(model, device, reject):
             review[s_name + "f_std_dist"] = review.get(s_name + "f_std_dist", []) + f_dist.cpu().tolist();
             
             for thres in THRESHOLDS:
-                t_name = "thres{:.1f}".format(thres);
+                t_name = "thres{:.4f}".format(thres);
                 review[s_name + t_name] = review.get(s_name + t_name, 0) + th.sum(dist <= thres).item();
                 review[s_name + "z_" + t_name] = review.get(s_name + "z_" + t_name, 0) + th.sum(z_dist <= thres).item();
                 review[s_name + "f_" + t_name] = review.get(s_name + "f_" + t_name, 0) + th.sum(f_dist <= thres).item();
@@ -69,7 +67,7 @@ def do_review(model, device, reject):
             f_rank = rank[s_i + diag, diag];
 
             if reject:
-                dist[diag, diag] = th.max(dist) + 1.0;
+                dist[s_i + diag, diag] = th.max(dist) + 1.0;
                 rank = 1 + th.argsort(th.argsort(dist, dim = 0), dim = 0);
             z_rank = th.min(th.cat([rank[i: i + 10, i - s_i: i - s_i + 10] for i in range(s_i, s_i + BATCH_SIZE, 10)], dim = 1), dim = 0)[0];
             
@@ -109,6 +107,8 @@ def do_review(model, device, reject):
     return review;
 
 def main(args, result_path):
+    print("Review", result_path);
+    
     device = th.device(args.device);
     model = Model(
         args.lr,
@@ -174,15 +174,15 @@ def main(args, result_path):
         max_val = 0;
         for idx, (s_name, split) in enumerate(zip(['train_', 'valid_', 'test_'], ["Train", "Valid", "Test"])):
             N = review[s_name + "max_rank"];
-            arr = smooth([review[s_name + "z_thres{:.1f}".format(thres)] / N / 10 * 10.0 for thres in THRESHOLDS]);
+            arr = smooth([review[s_name + "z_thres{:.4f}".format(thres)] / N / 9 for thres in THRESHOLDS]);
             plt.plot(THRESHOLDS, arr, label = split + " Zero", color = color[idx][0]);
             max_val = max(max_val, max(arr));
 
-            arr = smooth([review[s_name + "f_thres{:.1f}".format(thres)] / N * 10.0 for thres in THRESHOLDS]);
+            arr = smooth([review[s_name + "f_thres{:.4f}".format(thres)] / N for thres in THRESHOLDS]);
             plt.plot(THRESHOLDS, arr, label = split + " Few", color = color[idx][1]);
             max_val = max(max_val, max(arr));
 
-            arr = smooth([review[s_name + "thres{:.1f}".format(thres)] / (N * N) * 10.0 for thres in THRESHOLDS]);
+            arr = smooth([review[s_name + "thres{:.4f}".format(thres)] / (N * N) for thres in THRESHOLDS]);
             plt.plot(THRESHOLDS, arr, label = split + " ALL", color = color[idx][2]);
             max_val = max(max_val, max(arr));
 
@@ -196,19 +196,19 @@ def main(args, result_path):
         plt.title("Distance Density (Test. Zero: {:.1f} +/- {:.1f}, Few: {:.1f} +/- {:.1f}, ALL: {:.1f})".format(
             review["test_z_avg_dist"], review["test_z_std_dist"], review["test_f_avg_dist"], review["test_f_std_dist"], review["test_avg_dist"]));
         plt.xlabel("d");
-        plt.ylabel("Ratio of Photos with d-{} < Dist. <= d".format(GAP));
+        plt.ylabel("Ratio of Photos with d-{:.2f} < Dist. <= d".format(GAP));
         max_val = 0;
         for idx, (s_name, split) in enumerate(zip(['train_', 'valid_', 'test_'], ["Train", "Valid", "Test"])):
             N = review[s_name + "max_rank"];
-            arr = smooth([(review[s_name + "z_thres{:.1f}".format(thres)] - review.get(s_name + "z_thres{:.1f}".format(thres - GAP), 0)) / N / 10.0 * 10.0 for thres in THRESHOLDS]);
+            arr = smooth([(review[s_name + "z_thres{:.4f}".format(thres)] - review.get(s_name + "z_thres{:.4f}".format(thres - GAP), 0)) / N / 9.0 / GAP for thres in THRESHOLDS]);
             plt.plot(THRESHOLDS, arr, label = split + " Zero", color = color[idx][0]);
             max_val = max(max_val, max(arr));
 
-            arr = smooth([(review[s_name + "f_thres{:.1f}".format(thres)] - review.get(s_name + "f_thres{:.1f}".format(thres - GAP), 0)) / N * 10.0 for thres in THRESHOLDS]);
+            arr = smooth([(review[s_name + "f_thres{:.4f}".format(thres)] - review.get(s_name + "f_thres{:.4f}".format(thres - GAP), 0)) / N / GAP for thres in THRESHOLDS]);
             plt.plot(THRESHOLDS, arr, label = split + " Few", color = color[idx][1]);
             max_val = max(max_val, max(arr));
 
-            arr = smooth([(review[s_name + "thres{:.1f}".format(thres)] - review.get(s_name + "thres{:.1f}".format(thres - GAP), 0)) / (N * N) * 10.0 for thres in THRESHOLDS]);
+            arr = smooth([(review[s_name + "thres{:.4f}".format(thres)] - review.get(s_name + "thres{:.4f}".format(thres - GAP), 0)) / (N * N) / GAP for thres in THRESHOLDS]);
             plt.plot(THRESHOLDS, arr, label = split + " ALL", color = color[idx][2]);
             max_val = max(max_val, max(arr));
 
@@ -250,4 +250,5 @@ if __name__ == '__main__':
     result_path = "../Results/Result" + str(pre_args.result) + "/";
     with open(result_path + "hparam.json", "r") as f:
         args = argparse.Namespace(**json.load(f));
+    BATCH_SIZE = 400 if args.neural_net[:3] == "VGG" else 1000;
     main(args, result_path);
