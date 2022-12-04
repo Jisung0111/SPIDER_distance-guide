@@ -1,4 +1,12 @@
+mkdir Results
+
 cd Data
-tar -zxf sketch.tar.gz
 tar -zxf photo.tar.gz
+echo 'Photo Decompression Done.'
+tar -zxf sketch.tar.gz
+echo 'Sketch Decompression Done.'
+
+mkdir Preprocessed
+echo 'Start Data Split...'
 python SplitDivision.py
+
