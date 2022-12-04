@@ -2,7 +2,7 @@
 
 ## 1. Data Pre-processsing
     bash preprocess.sh
-> **This command uses python torch**. (checked working on torch version 1.11.0, 1.13.0)  
+> **This command uses python torch**. (checked working on torch version 1.11.0, 1.12.1, 1.13.0)  
   
 Data will be automatically pre-processed and stored in Data/Preprocessed/.
 ## 2. Training
