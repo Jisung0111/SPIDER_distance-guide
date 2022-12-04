@@ -34,7 +34,8 @@ class Model:
         tau,
         reg,
         loss_setting,
-        Q
+        Q,
+        step_size = 20
     ):
         self.batch_size = batch_size;
         self.data_per_figr = data_per_figr;
@@ -60,7 +61,9 @@ class Model:
         elif lr_scheduler == 'CosineAnnealingLR':
             self.scheduler = th.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max = 10);
         elif lr_scheduler == 'StepLR':
-            self.scheduler = th.optim.lr_scheduler.StepLR(self.optimizer, step_size = 10, gamma = 0.3);
+            self.scheduler = th.optim.lr_scheduler.StepLR(self.optimizer, step_size = step_size, gamma = 0.1);
+        elif lr_scheduler == 'ExponentialLR':
+            self.scheduler = th.optim.lr_scheduler.ExponentialLR(self.optimizer, gamma = 0.945);
         else: raise ValueError("Wrong learning rate scheduler");
 
         self.loss_setting = loss_setting;
@@ -158,7 +161,7 @@ class Model:
             valid_f_acc = th.mean((th.argmin(dist, 0) == diag).float()).item();
 
             dist[diag, diag] = th.max(dist) + 1.0;
-            valid_z_dist = th.sqrt(th.stack([dist[i: i + 10, i: i + 10][N_DIAG] for i in range(0, valid_label.shape[0], 10)]));
+            valid_z_dist = th.sqrt(th.stack([dist[i: i + 10, i: i + 10][N_DIAG] for i in range(0, dist.shape[0], 10)]));
             valid_z_avgdist, valid_z_stddist = th.mean(valid_z_dist).item(), th.mean(th.std(valid_z_dist, dim = 1)).item();
             valid_z_acc = th.mean((th.argmin(dist, 0).div(10, rounding_mode = 'trunc') == diag.div(10, rounding_mode = 'trunc')).float()).item();
         
@@ -168,6 +171,8 @@ class Model:
         if self.lr_scheduler == 'ReduceLROnPlateau':
             self.scheduler.step(valid_f_acc);
         elif self.lr_scheduler == 'StepLR':
+            self.scheduler.step();
+        elif self.lr_scheduler == 'ExponentialLR':
             self.scheduler.step();
         
         return epoch + 1, losses, train_avgdist, train_stddist, train_distribution, \
