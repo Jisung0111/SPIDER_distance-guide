@@ -36,7 +36,7 @@ python main.py
 # Distance guide, Triplet loss
 python main.py --loss_setting 0 --tau 4.0 --reg 2.0 --Q 4.0
 # No guide, Our loss
-python main.py --epochs 240 --tau 1.5 --reg 0.5 --Q 5.0
+python main.py --epochs 240 --guide None --tau 1.5 --reg 0.5 --Q 5.0
 ```
 ## 3. Evaluation
     python reviewer.py --result 1 --max_thres 10
