@@ -28,10 +28,19 @@ python main.py --lr 0.001 --neural_net ResNet-50 --seed 1
     + model.pth: Weights of the neural network when it has the best few shot accuracy.
     + model0.pth: Weights of the neural network when it has the best zero shot accuracy.
     + Training_Log.txt: Contians Time taken, Loss, Statistics of Distance distribution and Accuracy on each epoch.
-    + history.pkl: Contains the values used to write Training_Log.txt as a pickle file in order to load easily.
+    + history.pkl: Contains the values used to write Training_Log.txt as a pickle file in order to load easily.  
++ The followings are the settings used to make our results.
+```
+# Distance guide, Our loss
+python main.py
+# Distance guide, Triplet loss
+python main.py --loss_setting 0 --tau 4.0 --reg 2.0 --Q 4.0
+# No guide, Our loss
+python main.py --epochs 240 --tau 1.5 --reg 0.5 --Q 5.0
+```
 ## 3. Evaluation
     python reviewer.py --result 1 --max_thres 10
-> The argument 'result' means evaluation of "Results/Result{result}". (**Check the Directory**), After evaluation, increase or decrease 'max_thres' and then re-evaluate if the range of x axis of Distance Density on review.jpg is insufficient or too much.
+> **Evaluation is automatically done with max_thres 10 after training.** however if the range of x axis of Distance Density on review.jpg is insufficient or too much, increase or decrease 'max_thres' and then re-evaluate. The argument 'result' means evaluation of "Results/Result{result}". (**Check the Directory**)
 + Basic Metrics such as Accuracy or Average Distance are calculated during training. However, we sometimes need to add or fix some metrics even after training is done. so metrics taking a lot computation such as MR, MRR, Hit@K, Distribution of Distances are separated.
 + The following files will be created after evaluation is done.
     + review.jpg: Contains MR, MRR, Accuracy, Hit@K, Distance Density using model.pth which has shown the best accuracy on few shot setting.
