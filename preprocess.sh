@@ -9,4 +9,3 @@ echo 'Sketch Decompression Done.'
 mkdir Preprocessed
 echo 'Start Data Split...'
 python SplitDivision.py
-
