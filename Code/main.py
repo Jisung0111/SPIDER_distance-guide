@@ -8,24 +8,26 @@ import time
 import json
 import pickle
 import utils
+import os
 
 parser = argparse.ArgumentParser();
 
 parser.add_argument('--seed', default = 0, type = int);
-parser.add_argument('--epochs', default = 50, type = int);
+parser.add_argument('--epochs', default = 80, type = int);
 parser.add_argument('--batch_size', default = 100, type = int); # batch size for training set. Should divide 16000.
 parser.add_argument('--vbatch_size', default = 500, type = int); # batch size for valid, test set. Should divide 2000.
 parser.add_argument('--data_per_figr', default = 10, type = int);
-parser.add_argument('--lr', default = 0.001, type = float);
-parser.add_argument('--lr_scheduler', default = 'None', type = str); # one of [None, ReduceLROnPlateau, CosineAnnealingLR, StepLR]
+parser.add_argument('--lr', default = 0.003, type = float);
+parser.add_argument('--lr_scheduler', default = 'None', type = str); # one of [None, ReduceLROnPlateau, CosineAnnealingLR, StepLR, ExponentialLR]
+parser.add_argument('--step_size', default = 40, type = int); # Step size of StepLR.
 parser.add_argument('--input_size', default = '224_224', type = str); # 224 * 224 * 3 -> '224_224' # Original VGG-19 and Resnet get 224x224 input.
 parser.add_argument('--batch_norm', default = 1, type = int); # indicates to use batch norm
-parser.add_argument('--loss_setting', default = 0, type = int); # if loss setting is 0, general loss. or 1, only changes Y.
+parser.add_argument('--loss_setting', default = 2, type = int); # if loss setting is 0, general loss. or 1, only changes Y.
 parser.add_argument('--feature_dim', default = 64, type = int); # dimension of output of CNN.
 parser.add_argument('--guide', default = 'Distance', type = str); # 'Distance' or 'None'
-parser.add_argument('--tau', default = 10.0, type = float); # used to determine necessity of distance guidance. still not sure how much value is appropriate.
-parser.add_argument('--reg', default = 0.5, type = float); # weight of reg_loss. still not sure how much value is appropriate.
-parser.add_argument('--Q', default = 10.0, type = float); # used for calculating hyper parameter alpha, beta, gamma.
+parser.add_argument('--tau', default = 1.5, type = float); # used to determine necessity of distance guidance. still not sure how much value is appropriate.
+parser.add_argument('--reg', default = 1.0, type = float); # weight of reg_loss. still not sure how much value is appropriate.
+parser.add_argument('--Q', default = 2.5, type = float); # used for calculating hyper parameter alpha, beta, gamma.
 parser.add_argument('--neural_net', default = 'ResNet-50', type = str); # one of {VGG-11, VGG-13, VGG-16, VGG-19, ResNet-18, ResNet-34, ResNet-50, ResNet-101, ResNet-152}
 parser.add_argument('--device', default = 'cuda:0', type = str);
 
@@ -51,11 +53,13 @@ def main(args):
         args.tau,
         args.reg,
         args.loss_setting,
-        args.Q
+        args.Q,
+        args.step_size
     );
 
     # Make a result saving directory
     result_path = utils.make_result_dir("../Results");
+    print("Saving on", result_path);
     with open(result_path + "hparam.json", 'w') as f: json.dump(vars(args), f, indent = 4);
 
     history = {
@@ -112,6 +116,10 @@ def main(args):
                 history["best_z_epoch"] = epoch;
                 model.save_model(result_path + "model0.pth");
             utils.plot_train_distribution(result_path, epoch, train_distribution, train_avgdist, args.tau);
+            if epoch % 5 == 0:
+                utils.plot_graph(history, result_path);
+                with open(result_path + "history.pkl", "wb") as f: pickle.dump(history, f);
+            
     except Exception as e:
         with open(result_path + "Training_Log.txt", 'a') as f:
             f.write("Accidently Training Stopped\nError Message: {}".format(repr(e)));
@@ -142,8 +150,8 @@ def main(args):
     if args.device != "cpu":
         with th.cuda.device(args.device):th.cuda.empty_cache();
 
-    with open(result_path + "history.pkl", "wb") as f:
-        pickle.dump(history, f);
+    with open(result_path + "history.pkl", "wb") as f: pickle.dump(history, f);
+    os.system("python reviewer.py --result {} --max_thres 10".format(result_path.split("Result")[-1][:-1]));
 
 if __name__ == '__main__':
     args = parser.parse_args();
