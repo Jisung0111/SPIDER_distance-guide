@@ -53,5 +53,5 @@ python main.py --epochs 240 --guide None --tau 1.5 --reg 0.5 --Q 5.0
     + review0.pkl: Contains the values used to plot graphs on review0.jpg in pickle file in order to load easily.
   
 ##
-You can check coding history on github https://github.com/Jisung0111/SPIDER_distance-guide  
+You can check coding history on https://github.com/Jisung0111/SPIDER_distance-guide  
 
