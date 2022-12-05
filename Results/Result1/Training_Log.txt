@@ -1,0 +1,90 @@
+Epoch 1 (0h 01m 42s)	Loss: 0.5494	Train Dist: 6.1733 +/- 5.1373	Valid fDist: 9.5035 +/- 2.7444	Valid fAcc: 0.0030	Valid zDist: 9.8684 +/- 2.4614	Valid zAcc: 0.0045
+Epoch 2 (0h 03m 23s)	Loss: 0.4553	Train Dist: 3.6602 +/- 1.2586	Valid fDist: 4.7014 +/- 1.3412	Valid fAcc: 0.0210	Valid zDist: 6.0935 +/- 1.4476	Valid zAcc: 0.0100
+Epoch 3 (0h 05m 04s)	Loss: 0.4842	Train Dist: 2.2157 +/- 0.8529	Valid fDist: 5.8723 +/- 1.3991	Valid fAcc: 0.0245	Valid zDist: 6.8024 +/- 1.2399	Valid zAcc: 0.0125
+Epoch 4 (0h 06m 45s)	Loss: 0.4547	Train Dist: 1.9329 +/- 0.7227	Valid fDist: 4.3066 +/- 1.0615	Valid fAcc: 0.0565	Valid zDist: 5.5772 +/- 1.1645	Valid zAcc: 0.0155
+Epoch 5 (0h 08m 26s)	Loss: 0.4302	Train Dist: 1.8081 +/- 0.6591	Valid fDist: 6.5587 +/- 1.6385	Valid fAcc: 0.0305	Valid zDist: 7.6836 +/- 1.4296	Valid zAcc: 0.0140
+Epoch 6 (0h 10m 07s)	Loss: 0.4146	Train Dist: 1.7472 +/- 0.6398	Valid fDist: 4.4897 +/- 0.9484	Valid fAcc: 0.0420	Valid zDist: 5.6765 +/- 1.0568	Valid zAcc: 0.0170
+Epoch 7 (0h 11m 48s)	Loss: 0.4038	Train Dist: 1.7019 +/- 0.6241	Valid fDist: 6.0129 +/- 1.5995	Valid fAcc: 0.0350	Valid zDist: 7.1395 +/- 1.4540	Valid zAcc: 0.0140
+Epoch 8 (0h 13m 28s)	Loss: 0.3909	Train Dist: 1.6584 +/- 0.6125	Valid fDist: 4.5498 +/- 1.2401	Valid fAcc: 0.0680	Valid zDist: 5.8698 +/- 1.2448	Valid zAcc: 0.0260
+Epoch 9 (0h 15m 09s)	Loss: 0.3802	Train Dist: 1.6070 +/- 0.5813	Valid fDist: 5.6089 +/- 1.4483	Valid fAcc: 0.0280	Valid zDist: 6.3278 +/- 1.1207	Valid zAcc: 0.0120
+Epoch 10 (0h 16m 49s)	Loss: 0.3755	Train Dist: 1.6169 +/- 0.5948	Valid fDist: 6.5508 +/- 1.6175	Valid fAcc: 0.0200	Valid zDist: 7.2740 +/- 1.4407	Valid zAcc: 0.0095
+Epoch 11 (0h 18m 29s)	Loss: 0.3662	Train Dist: 1.5851 +/- 0.5909	Valid fDist: 6.6985 +/- 1.6027	Valid fAcc: 0.0160	Valid zDist: 7.4656 +/- 1.4815	Valid zAcc: 0.0175
+Epoch 12 (0h 20m 09s)	Loss: 0.3609	Train Dist: 1.5553 +/- 0.5851	Valid fDist: 4.4274 +/- 1.4073	Valid fAcc: 0.0765	Valid zDist: 5.6088 +/- 1.3059	Valid zAcc: 0.0265
+Epoch 13 (0h 21m 50s)	Loss: 0.3547	Train Dist: 1.5167 +/- 0.5672	Valid fDist: 5.8088 +/- 1.2781	Valid fAcc: 0.0240	Valid zDist: 6.7059 +/- 1.1815	Valid zAcc: 0.0135
+Epoch 14 (0h 23m 30s)	Loss: 0.3481	Train Dist: 1.5127 +/- 0.5729	Valid fDist: 3.5045 +/- 0.8689	Valid fAcc: 0.0930	Valid zDist: 4.9010 +/- 1.0927	Valid zAcc: 0.0430
+Epoch 15 (0h 25m 11s)	Loss: 0.3440	Train Dist: 1.4998 +/- 0.5633	Valid fDist: 4.6589 +/- 1.3776	Valid fAcc: 0.0580	Valid zDist: 5.5736 +/- 1.1277	Valid zAcc: 0.0195
+Epoch 16 (0h 26m 52s)	Loss: 0.3370	Train Dist: 1.4828 +/- 0.5614	Valid fDist: 4.7912 +/- 1.3215	Valid fAcc: 0.0540	Valid zDist: 5.8264 +/- 1.2251	Valid zAcc: 0.0205
+Epoch 17 (0h 28m 32s)	Loss: 0.3339	Train Dist: 1.4909 +/- 0.5658	Valid fDist: 6.4101 +/- 2.1355	Valid fAcc: 0.0450	Valid zDist: 7.1916 +/- 1.4543	Valid zAcc: 0.0190
+Epoch 18 (0h 30m 12s)	Loss: 0.3303	Train Dist: 1.4826 +/- 0.5616	Valid fDist: 5.2517 +/- 1.5436	Valid fAcc: 0.0430	Valid zDist: 6.2309 +/- 1.3288	Valid zAcc: 0.0270
+Epoch 19 (0h 31m 52s)	Loss: 0.3227	Train Dist: 1.4649 +/- 0.5494	Valid fDist: 5.4489 +/- 1.8154	Valid fAcc: 0.0350	Valid zDist: 6.2384 +/- 1.3734	Valid zAcc: 0.0245
+Epoch 20 (0h 33m 32s)	Loss: 0.3169	Train Dist: 1.4517 +/- 0.5433	Valid fDist: 5.5583 +/- 1.4858	Valid fAcc: 0.0295	Valid zDist: 6.3386 +/- 1.2569	Valid zAcc: 0.0165
+Epoch 21 (0h 35m 13s)	Loss: 0.3132	Train Dist: 1.4595 +/- 0.5472	Valid fDist: 4.8899 +/- 1.2894	Valid fAcc: 0.0280	Valid zDist: 5.9535 +/- 1.4308	Valid zAcc: 0.0390
+Epoch 22 (0h 36m 53s)	Loss: 0.3096	Train Dist: 1.4483 +/- 0.5401	Valid fDist: 5.2339 +/- 1.7691	Valid fAcc: 0.0350	Valid zDist: 6.1119 +/- 1.4822	Valid zAcc: 0.0220
+Epoch 23 (0h 38m 33s)	Loss: 0.3052	Train Dist: 1.4473 +/- 0.5346	Valid fDist: 5.3279 +/- 1.4252	Valid fAcc: 0.0310	Valid zDist: 6.1828 +/- 1.3850	Valid zAcc: 0.0245
+Epoch 24 (0h 40m 13s)	Loss: 0.2987	Train Dist: 1.4335 +/- 0.5362	Valid fDist: 4.4667 +/- 1.3647	Valid fAcc: 0.0420	Valid zDist: 5.5800 +/- 1.4776	Valid zAcc: 0.0405
+Epoch 25 (0h 41m 53s)	Loss: 0.2940	Train Dist: 1.4384 +/- 0.5347	Valid fDist: 6.2588 +/- 1.8885	Valid fAcc: 0.0115	Valid zDist: 6.8611 +/- 1.4835	Valid zAcc: 0.0190
+Epoch 26 (0h 43m 33s)	Loss: 0.2903	Train Dist: 1.4301 +/- 0.5345	Valid fDist: 5.8028 +/- 2.1839	Valid fAcc: 0.0355	Valid zDist: 6.6150 +/- 1.5800	Valid zAcc: 0.0280
+Epoch 27 (0h 45m 14s)	Loss: 0.2870	Train Dist: 1.4313 +/- 0.5314	Valid fDist: 5.5644 +/- 1.6755	Valid fAcc: 0.0265	Valid zDist: 6.3947 +/- 1.5088	Valid zAcc: 0.0245
+Epoch 28 (0h 46m 54s)	Loss: 0.2817	Train Dist: 1.4358 +/- 0.5294	Valid fDist: 4.0097 +/- 1.3232	Valid fAcc: 0.0640	Valid zDist: 5.1543 +/- 1.3936	Valid zAcc: 0.0465
+Epoch 29 (0h 48m 34s)	Loss: 0.2746	Train Dist: 1.4151 +/- 0.5291	Valid fDist: 6.3094 +/- 2.1317	Valid fAcc: 0.0150	Valid zDist: 7.0089 +/- 1.7481	Valid zAcc: 0.0240
+Epoch 30 (0h 50m 14s)	Loss: 0.2717	Train Dist: 1.4107 +/- 0.5188	Valid fDist: 4.3181 +/- 1.6456	Valid fAcc: 0.0560	Valid zDist: 5.4467 +/- 1.6350	Valid zAcc: 0.0525
+Epoch 31 (0h 51m 55s)	Loss: 0.2660	Train Dist: 1.4157 +/- 0.5197	Valid fDist: 3.9483 +/- 1.2876	Valid fAcc: 0.0690	Valid zDist: 5.1987 +/- 1.4592	Valid zAcc: 0.0505
+Epoch 32 (0h 53m 35s)	Loss: 0.2610	Train Dist: 1.4200 +/- 0.5261	Valid fDist: 6.0022 +/- 1.9679	Valid fAcc: 0.0190	Valid zDist: 6.7911 +/- 1.8903	Valid zAcc: 0.0195
+Epoch 33 (0h 55m 16s)	Loss: 0.2564	Train Dist: 1.4090 +/- 0.5142	Valid fDist: 4.9028 +/- 1.8716	Valid fAcc: 0.0465	Valid zDist: 5.9143 +/- 1.6496	Valid zAcc: 0.0335
+Epoch 34 (0h 56m 56s)	Loss: 0.2493	Train Dist: 1.4076 +/- 0.5147	Valid fDist: 5.1664 +/- 1.7161	Valid fAcc: 0.0225	Valid zDist: 6.0609 +/- 1.7349	Valid zAcc: 0.0330
+Epoch 35 (0h 58m 36s)	Loss: 0.2442	Train Dist: 1.4108 +/- 0.5120	Valid fDist: 7.0155 +/- 2.4541	Valid fAcc: 0.0145	Valid zDist: 7.6748 +/- 2.1069	Valid zAcc: 0.0265
+Epoch 36 (1h 00m 16s)	Loss: 0.2373	Train Dist: 1.4149 +/- 0.5150	Valid fDist: 5.0341 +/- 1.8794	Valid fAcc: 0.0265	Valid zDist: 5.9684 +/- 1.8383	Valid zAcc: 0.0425
+Epoch 37 (1h 01m 56s)	Loss: 0.2334	Train Dist: 1.4193 +/- 0.5113	Valid fDist: 5.7071 +/- 2.1988	Valid fAcc: 0.0225	Valid zDist: 6.6575 +/- 2.0958	Valid zAcc: 0.0295
+Epoch 38 (1h 03m 37s)	Loss: 0.2257	Train Dist: 1.4102 +/- 0.5088	Valid fDist: 5.0051 +/- 1.7567	Valid fAcc: 0.0210	Valid zDist: 5.9458 +/- 1.7791	Valid zAcc: 0.0345
+Epoch 39 (1h 05m 17s)	Loss: 0.2185	Train Dist: 1.3997 +/- 0.5050	Valid fDist: 4.9794 +/- 1.9586	Valid fAcc: 0.0225	Valid zDist: 6.1562 +/- 2.0646	Valid zAcc: 0.0440
+Epoch 40 (1h 06m 57s)	Loss: 0.2133	Train Dist: 1.3961 +/- 0.4997	Valid fDist: 4.6561 +/- 1.7520	Valid fAcc: 0.0265	Valid zDist: 5.7009 +/- 1.8057	Valid zAcc: 0.0375
+Epoch 41 (1h 08m 37s)	Loss: 0.2047	Train Dist: 1.3933 +/- 0.4991	Valid fDist: 5.7668 +/- 2.3009	Valid fAcc: 0.0225	Valid zDist: 6.6756 +/- 2.1074	Valid zAcc: 0.0335
+Epoch 42 (1h 10m 17s)	Loss: 0.2020	Train Dist: 1.3949 +/- 0.4960	Valid fDist: 5.2167 +/- 2.0091	Valid fAcc: 0.0235	Valid zDist: 6.2872 +/- 2.0228	Valid zAcc: 0.0405
+Epoch 43 (1h 11m 57s)	Loss: 0.1931	Train Dist: 1.3855 +/- 0.4923	Valid fDist: 7.0809 +/- 2.9619	Valid fAcc: 0.0130	Valid zDist: 7.7630 +/- 2.2342	Valid zAcc: 0.0220
+Epoch 44 (1h 13m 38s)	Loss: 0.1862	Train Dist: 1.3821 +/- 0.4864	Valid fDist: 4.9167 +/- 2.0255	Valid fAcc: 0.0290	Valid zDist: 6.1126 +/- 2.1470	Valid zAcc: 0.0445
+Epoch 45 (1h 15m 18s)	Loss: 0.1808	Train Dist: 1.3747 +/- 0.4859	Valid fDist: 5.1316 +/- 2.0116	Valid fAcc: 0.0215	Valid zDist: 6.2975 +/- 2.0941	Valid zAcc: 0.0330
+Epoch 46 (1h 16m 58s)	Loss: 0.1755	Train Dist: 1.3562 +/- 0.4806	Valid fDist: 7.0875 +/- 2.8501	Valid fAcc: 0.0120	Valid zDist: 7.9067 +/- 2.6627	Valid zAcc: 0.0265
+Epoch 47 (1h 18m 39s)	Loss: 0.1682	Train Dist: 1.3481 +/- 0.4729	Valid fDist: 5.3350 +/- 2.0329	Valid fAcc: 0.0215	Valid zDist: 6.4369 +/- 2.1722	Valid zAcc: 0.0290
+Epoch 48 (1h 20m 19s)	Loss: 0.1616	Train Dist: 1.3421 +/- 0.4695	Valid fDist: 5.0530 +/- 2.0976	Valid fAcc: 0.0285	Valid zDist: 6.3528 +/- 2.3111	Valid zAcc: 0.0410
+Epoch 49 (1h 21m 59s)	Loss: 0.1568	Train Dist: 1.3237 +/- 0.4539	Valid fDist: 4.4319 +/- 1.7055	Valid fAcc: 0.0245	Valid zDist: 5.7826 +/- 2.0098	Valid zAcc: 0.0430
+Epoch 50 (1h 23m 39s)	Loss: 0.1510	Train Dist: 1.3025 +/- 0.4534	Valid fDist: 6.7915 +/- 2.9110	Valid fAcc: 0.0130	Valid zDist: 7.7298 +/- 2.6122	Valid zAcc: 0.0285
+Epoch 51 (1h 25m 20s)	Loss: 0.1462	Train Dist: 1.2930 +/- 0.4480	Valid fDist: 6.6855 +/- 2.8433	Valid fAcc: 0.0170	Valid zDist: 7.6278 +/- 2.5310	Valid zAcc: 0.0315
+Epoch 52 (1h 27m 00s)	Loss: 0.1410	Train Dist: 1.2857 +/- 0.4435	Valid fDist: 6.0299 +/- 2.4886	Valid fAcc: 0.0205	Valid zDist: 7.2812 +/- 2.5821	Valid zAcc: 0.0395
+Epoch 53 (1h 28m 40s)	Loss: 0.1358	Train Dist: 1.2543 +/- 0.4299	Valid fDist: 5.4926 +/- 2.0191	Valid fAcc: 0.0120	Valid zDist: 6.7872 +/- 2.3289	Valid zAcc: 0.0275
+Epoch 54 (1h 30m 20s)	Loss: 0.1310	Train Dist: 1.2347 +/- 0.4187	Valid fDist: 5.5006 +/- 2.1126	Valid fAcc: 0.0140	Valid zDist: 6.8274 +/- 2.3560	Valid zAcc: 0.0320
+Epoch 55 (1h 32m 00s)	Loss: 0.1281	Train Dist: 1.2312 +/- 0.4214	Valid fDist: 5.9099 +/- 2.2757	Valid fAcc: 0.0140	Valid zDist: 7.1164 +/- 2.4470	Valid zAcc: 0.0320
+Epoch 56 (1h 33m 41s)	Loss: 0.1235	Train Dist: 1.2013 +/- 0.4099	Valid fDist: 7.3474 +/- 3.0969	Valid fAcc: 0.0130	Valid zDist: 8.3787 +/- 2.8488	Valid zAcc: 0.0270
+Epoch 57 (1h 35m 22s)	Loss: 0.1200	Train Dist: 1.1920 +/- 0.4071	Valid fDist: 6.5733 +/- 2.5214	Valid fAcc: 0.0135	Valid zDist: 7.7244 +/- 2.5600	Valid zAcc: 0.0345
+Epoch 58 (1h 37m 02s)	Loss: 0.1169	Train Dist: 1.1744 +/- 0.3961	Valid fDist: 5.2512 +/- 2.0441	Valid fAcc: 0.0200	Valid zDist: 6.7364 +/- 2.4043	Valid zAcc: 0.0375
+Epoch 59 (1h 38m 43s)	Loss: 0.1138	Train Dist: 1.1575 +/- 0.3985	Valid fDist: 7.3986 +/- 2.9740	Valid fAcc: 0.0130	Valid zDist: 8.4648 +/- 2.7962	Valid zAcc: 0.0305
+Epoch 60 (1h 40m 23s)	Loss: 0.1103	Train Dist: 1.1383 +/- 0.3888	Valid fDist: 7.2594 +/- 2.7551	Valid fAcc: 0.0090	Valid zDist: 8.3428 +/- 2.7284	Valid zAcc: 0.0245
+Epoch 61 (1h 42m 03s)	Loss: 0.1081	Train Dist: 1.1289 +/- 0.3830	Valid fDist: 5.5212 +/- 2.1671	Valid fAcc: 0.0180	Valid zDist: 7.0769 +/- 2.4449	Valid zAcc: 0.0385
+Epoch 62 (1h 43m 43s)	Loss: 0.1053	Train Dist: 1.1068 +/- 0.3743	Valid fDist: 6.7768 +/- 2.7972	Valid fAcc: 0.0110	Valid zDist: 8.0332 +/- 2.7479	Valid zAcc: 0.0300
+Epoch 63 (1h 45m 23s)	Loss: 0.1026	Train Dist: 1.1001 +/- 0.3723	Valid fDist: 6.5601 +/- 2.5705	Valid fAcc: 0.0105	Valid zDist: 7.8342 +/- 2.6769	Valid zAcc: 0.0300
+Epoch 64 (1h 47m 04s)	Loss: 0.1020	Train Dist: 1.0934 +/- 0.3774	Valid fDist: 6.7984 +/- 2.6554	Valid fAcc: 0.0150	Valid zDist: 8.0414 +/- 2.7476	Valid zAcc: 0.0255
+Epoch 65 (1h 48m 44s)	Loss: 0.1000	Train Dist: 1.0742 +/- 0.3676	Valid fDist: 6.2843 +/- 2.5407	Valid fAcc: 0.0150	Valid zDist: 7.6345 +/- 2.6564	Valid zAcc: 0.0295
+Epoch 66 (1h 50m 24s)	Loss: 0.0976	Train Dist: 1.0594 +/- 0.3626	Valid fDist: 7.6233 +/- 3.1297	Valid fAcc: 0.0110	Valid zDist: 8.7329 +/- 2.9676	Valid zAcc: 0.0270
+Epoch 67 (1h 52m 04s)	Loss: 0.0967	Train Dist: 1.0543 +/- 0.3634	Valid fDist: 5.8620 +/- 2.2424	Valid fAcc: 0.0190	Valid zDist: 7.3830 +/- 2.5103	Valid zAcc: 0.0415
+Epoch 68 (1h 53m 45s)	Loss: 0.0957	Train Dist: 1.0556 +/- 0.3588	Valid fDist: 7.0514 +/- 2.6864	Valid fAcc: 0.0100	Valid zDist: 8.2685 +/- 2.6570	Valid zAcc: 0.0260
+Epoch 69 (1h 55m 25s)	Loss: 0.0944	Train Dist: 1.0391 +/- 0.3553	Valid fDist: 6.0279 +/- 2.3394	Valid fAcc: 0.0215	Valid zDist: 7.4628 +/- 2.5352	Valid zAcc: 0.0380
+Epoch 70 (1h 57m 05s)	Loss: 0.0933	Train Dist: 1.0207 +/- 0.3515	Valid fDist: 5.5264 +/- 2.0907	Valid fAcc: 0.0180	Valid zDist: 7.0469 +/- 2.4291	Valid zAcc: 0.0415
+Epoch 71 (1h 58m 46s)	Loss: 0.0925	Train Dist: 1.0173 +/- 0.3479	Valid fDist: 7.6555 +/- 3.1317	Valid fAcc: 0.0120	Valid zDist: 8.8713 +/- 2.8971	Valid zAcc: 0.0310
+Epoch 72 (2h 00m 27s)	Loss: 0.0911	Train Dist: 1.0056 +/- 0.3513	Valid fDist: 6.9644 +/- 2.7942	Valid fAcc: 0.0100	Valid zDist: 8.1950 +/- 2.7083	Valid zAcc: 0.0300
+Epoch 73 (2h 02m 08s)	Loss: 0.0903	Train Dist: 0.9966 +/- 0.3390	Valid fDist: 6.1245 +/- 2.4039	Valid fAcc: 0.0220	Valid zDist: 7.6016 +/- 2.5370	Valid zAcc: 0.0315
+Epoch 74 (2h 03m 48s)	Loss: 0.0890	Train Dist: 0.9956 +/- 0.3382	Valid fDist: 5.9814 +/- 2.1509	Valid fAcc: 0.0125	Valid zDist: 7.4538 +/- 2.4637	Valid zAcc: 0.0380
+Epoch 75 (2h 05m 29s)	Loss: 0.0886	Train Dist: 0.9900 +/- 0.3379	Valid fDist: 5.9834 +/- 2.2757	Valid fAcc: 0.0165	Valid zDist: 7.4781 +/- 2.4947	Valid zAcc: 0.0265
+Epoch 76 (2h 07m 10s)	Loss: 0.0884	Train Dist: 0.9850 +/- 0.3394	Valid fDist: 5.9090 +/- 2.0918	Valid fAcc: 0.0170	Valid zDist: 7.6571 +/- 2.5118	Valid zAcc: 0.0400
+Epoch 77 (2h 08m 51s)	Loss: 0.0871	Train Dist: 0.9697 +/- 0.3321	Valid fDist: 6.6962 +/- 2.4582	Valid fAcc: 0.0165	Valid zDist: 8.0461 +/- 2.6455	Valid zAcc: 0.0280
+Epoch 78 (2h 10m 31s)	Loss: 0.0860	Train Dist: 0.9634 +/- 0.3299	Valid fDist: 6.8908 +/- 2.5606	Valid fAcc: 0.0120	Valid zDist: 8.3088 +/- 2.6893	Valid zAcc: 0.0300
+Epoch 79 (2h 12m 11s)	Loss: 0.0856	Train Dist: 0.9700 +/- 0.3311	Valid fDist: 6.5506 +/- 2.5373	Valid fAcc: 0.0165	Valid zDist: 8.0733 +/- 2.6824	Valid zAcc: 0.0300
+Epoch 80 (2h 13m 51s)	Loss: 0.0847	Train Dist: 0.9580 +/- 0.3297	Valid fDist: 5.7169 +/- 2.1060	Valid fAcc: 0.0215	Valid zDist: 7.3338 +/- 2.4055	Valid zAcc: 0.0425
+
+Training Done (2h 14m 01s)
+
+Model with Best Few Accuracy on Validation set (Epoch: 14)
+Test fDist: 3.5381 +/- 0.9217	Test fAcc: 0.1000
+Test zDist: 4.8867 +/- 1.0797	Test zAcc: 0.0345
+
+Model with Best Zero Accuracy on Validation set (Epoch: 30)
+Test fDist: 4.2407 +/- 1.5962	Test fAcc: 0.0630
+Test zDist: 5.3702 +/- 1.5699	Test zAcc: 0.0540
