@@ -14,6 +14,8 @@ Data will be automatically pre-processed and stored in Data/Preprocessed/.
     + Batch size (e.g. --batch_size 100)
     + Learning Rate (e.g. --lr 0.001)
     + Guide (e.g. --guide None or --guide Distance)
+    + Loss (e.g. --loss_setting 0 or --loss_setting 1)
+        + loss_setting 0 is triplet loss and 2 is ours.
     + Neural Network (e.g. --neural_net ResNet-152)
         + One of (VGG-11, VGG-13, VGG-16, VGG-19, ResNet-18, ResNet-34, ResNet-50, ResNet-101, ResNet-152)
     + Device (e.g. --device cpu or --device cuda:1)
@@ -33,11 +35,11 @@ python main.py --lr 0.001 --neural_net ResNet-50 --seed 1
     + history.pkl: Contains the values used to write Training_Log.txt as a pickle file in order to load easily.  
 + The followings are the settings used to make our results.
 ```
-# Distance guide, Our loss
+# Distance guide, Our loss (see Results/Result0/review0.jpg)
 python main.py
-# Distance guide, Triplet loss
+# Distance guide, Triplet loss (see Results/Result1/review0.jpg)
 python main.py --loss_setting 0 --tau 4.0 --reg 2.0 --Q 4.0
-# No guide, Our loss
+# No guide, Our loss (see Results/Result2/review.jpg)
 python main.py --epochs 240 --guide None --tau 1.5 --reg 0.5 --Q 5.0
 ```
 ## 3. Evaluation
@@ -49,3 +51,7 @@ python main.py --epochs 240 --guide None --tau 1.5 --reg 0.5 --Q 5.0
     + review.pkl: Contains the values used to plot graphs on review.jpg in pickle file in order to load easily.
     + review0.jpg: Contains MR, MRR, Accuracy, Hit@K, Distance Density using model.pth which has shown the best accuracy on zero shot setting.
     + review0.pkl: Contains the values used to plot graphs on review0.jpg in pickle file in order to load easily.
+  
+##
+You can check coding history on github https://github.com/Jisung0111/SPIDER_distance-guide  
+
