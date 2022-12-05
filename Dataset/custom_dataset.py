@@ -23,6 +23,8 @@ class Custom2Sampler(Sampler):
     def __iter__(self):
         unused_labels = self.dataset.labels
         # # unused_labels = unused_labels.reset_index(level=0, names = 'id')
+#         print(unused_labels)
+#         print(len(unused_labels))
         unused_labels['id'] = unused_labels.index
         # unused_labels.to_csv('labels_test.csv', index = False, encoding='utf-8' )
         for _ in range(self.num_of_batches):
