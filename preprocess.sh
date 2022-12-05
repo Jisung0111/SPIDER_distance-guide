@@ -1,4 +1,6 @@
-mkdir Results
+if ! [ -d Results ] ; then
+ mkdir Results
+fi
 
 cd Data
 tar -zxf photo.tar.gz
