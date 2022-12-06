@@ -31,7 +31,7 @@ python main.py --lr 0.001 --neural_net ResNet-50 --seed 1
     + Log.jpg: Contains Loss, Average distance and Accuracy on each epoch.
     + model.pth: Weights of the neural network when it has the best few shot accuracy.
     + model0.pth: Weights of the neural network when it has the best zero shot accuracy.
-    + Training_Log.txt: Contians Time taken, Loss, Statistics of Distance distribution and Accuracy on each epoch.
+    + Training_Log.txt: Contains Time taken, Loss, Statistics of Distance distribution and Accuracy on each epoch.
     + history.pkl: Contains the values used to write Training_Log.txt as a pickle file in order to load easily.  
 + The followings are the settings used to make our results.
 ```
